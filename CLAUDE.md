@@ -29,7 +29,11 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 
 ## Vzdálenosti
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,
-  bod je uložen v `sektor.cil_lat/cil_lon` a lze ho ručně přepsat; na webu modrý špendlík.
+  bod je uložen v `sektor.cil_lat/cil_lon` a lze ho ručně přepsat.
+
+## Mapa
+- Sektor = konvexní obal jeho objektů (+~80 m) s vlastní barvou, objekty mají barvu sektoru.
+  Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají.
 
 ## Známé mezery
 - 44 objektů bez GPS, ~51 bez hodnotitelné cesty (doplnit případně z lezec.cz / skalnioblasti.cz).
@@ -37,4 +41,4 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 - Propozice závodu zatím nedostupné.
 
 ## Styl
-Jednoduché markdown-like stylování, bez barev a dekorací. Komunikace česky, věcně, kritika vítána.
+Jednoduché markdown-like stylování, bez barev a dekorací (výjimka: barvy sektorů na mapě). Komunikace česky, věcně, kritika vítána.
