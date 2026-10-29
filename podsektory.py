@@ -15,7 +15,8 @@ JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo',
          (41, 'Skála'): 'Paličník', (45, 'Kočičí kameny'): 'Francouzské kameny',
          (42, 'Šolcova stěna'): 'Šolcovy kameny', (42, 'Stojka'): 'Hlídači',
          (621, 'Brdo'): 'Milíř', (43, 'Kopřivník'): 'Koňská hlava'}
-ROZDEL = {(44, 'Dolní Lysá skála'): ['Stržový vrch', 'Kopřivník']}  # skupina -> objekty k nejbližšímu z vrcholů OSM
+ROZDEL = {(44, 'Dolní Lysá skála'): ['Stržový vrch', 'Kopřivník'],  # automatický název závisí na objektech
+          (44, 'Stržový vrch'): ['Stržový vrch', 'Kopřivník']}  # skupina -> objekty k nejbližšímu z vrcholů OSM
 PRESUN = {17959: 'Dračí vrch'}  # Atlas draků; objekt -> podsektor téhož sektoru
 
 def get(url, data=None, pokus=8):
