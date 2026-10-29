@@ -15,7 +15,7 @@ OBJEKTY = [
     (-6, STR, 'Kančí zub', 50.8718333, 15.0829167),
     (-7, SVA, 'Jožin z bážin', 50.8593039, 15.1984108),
 ]
-GPS = {  # objekty v ČHS bez GPS
+GPS = {  # objekty v ČHS bez GPS nebo se špatnou GPS (přepisuje ČHS)
     12620: (50.8027214, 15.1069553),  # K2 (Čchokori)
     17437: (50.8701708, 15.0985275),  # Kotel
     14219: (50.8637872, 15.0891208),  # Předskalí pyramidy
@@ -24,6 +24,7 @@ GPS = {  # objekty v ČHS bez GPS
     18268: (50.8609567, 15.0812381),  # Stěna zpívajícího stromu
     16485: (50.8593989, 15.0757769),  # The Zeď
     16488: (50.8669242, 15.0757742),  # Žezlo
+    8991: (50.8693583, 15.1011372),   # Skalní brána (ČHS má souřadnice u Štolpichu)
 }
 CESTY = {
     -1: [('Cesta zapadajícího slunce', 'V'), ('Smrčková cesta', 'IV'), ('Jitřní červánky', 'VIb')],
@@ -56,7 +57,7 @@ for oid, sid, n, lat, lon in OBJEKTY:
     db.execute('INSERT OR REPLACE INTO objekt(id,sektor_id,nazev,typ,lat,lon) VALUES (?,?,?,?,?,?)',
                (oid, sid, n, 'skála', lat, lon))
 for oid, (lat, lon) in GPS.items():
-    db.execute('UPDATE objekt SET lat=?, lon=? WHERE id=? AND lat IS NULL', (lat, lon, oid))
+    db.execute('UPDATE objekt SET lat=?, lon=? WHERE id=?', (lat, lon, oid))
 for oid, sid in SEKTOR.items():
     db.execute('UPDATE objekt SET sektor_id=? WHERE id=?', (sid, oid))
 db.execute('DELETE FROM cesta WHERE id < 0')
