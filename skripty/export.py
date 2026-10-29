@@ -10,7 +10,8 @@ VYRADIT = {8387, 8415,  # Kočičí kámen (vedou na něj schody), Podsvětí (m
            # ↑ Vrátnej, Náhrobní kámen, Patka, Vodojem, Boží Muka, Bushman, Dračí doupě, Fojtecký drak, Páže, Špičoun (Raketa), Tvrz
            9385, 14221, 10456, 16488,  # Karetní stůl, Podhradí, Palisáda, Žezlo
            10440, 10434, 14232, 10431,  # Saloon, Ruplá, Schody, Regál
-           17456, 10362}  # Koňská hlava - Amfiteátr, Frýdlantské cimbuří - západní vrchol
+           17456, 10362,  # Koňská hlava - Amfiteátr, Frýdlantské cimbuří - západní vrchol
+           19289, 19557, 17662, 8900, 8948, 8873, 9394}  # Odlehlé skály dál než 22 km pěšky: Dědova skála, Narozeninová, Rybář, Polubenský hřib, Kuchař, Otesánek v Albrechtickém sedle, Kubíkovy kameny
 VEN = re.compile(r'\blom\b|stěn|masiv|masív|předskal', re.I)
 db = sqlite3.connect("data/jizerky.db"); db.row_factory = sqlite3.Row
 rows = [dict(r) for r in db.execute(
