@@ -11,7 +11,8 @@ BEZ = {40}          # Odlehlé skály – rozeseté po celých horách, bez pods
 CACHE = 'dem_cache.json'
 # ruční názvy (dle pořadatele): (sektor, automatický název) -> název; stejný název = sloučení skupin
 JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo',
-         (39, 'u Vajíčko'): 'Ptačí kupy', (41, 'Skála'): 'Paličník', (45, 'Kočičí kameny'): 'Francouzské kameny',
+         (39, 'u Vajíčko'): 'Ptačí kupy', (39, 'Ořešník'): 'Velký Štolpich', (39, 'Holubník'): 'Malý Štolpich',
+         (41, 'Skála'): 'Paličník', (45, 'Kočičí kameny'): 'Francouzské kameny',
          (42, 'Šolcova stěna'): 'Šolcovy kameny', (42, 'Stojka'): 'Hlídači'}
 
 def get(url, data=None, pokus=8):
