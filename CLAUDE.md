@@ -39,7 +39,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 
 ## Mapa
 - Podsektory: automaticky podle terénu (`podsektory.py`), hranice vedou údolími. Výjimka: Svah pod Aplitovými
-  skalami (v ČHS samostatný sektor) je ručně podsektorem Štolpichu. Na mapě menší čárkované plochy, body neovlivňují.
+  skalami (v ČHS samostatný sektor) je ručně podsektorem Štolpichu. Ruční úpravy v `podsektory.py`: JMENA (přejmenování/sloučení),
+  ROZDEL (skupina rozdělena podle nejbližšího vrcholu, Dolní Lysá skála -> Stržový vrch + Kopřivník), PRESUN (objekt do podsektoru). Na mapě menší čárkované plochy, body neovlivňují.
 - Sektor = konvexní obal jeho objektů (+~80 m) s vlastní barvou, objekty mají barvu sektoru.
   Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají, body jsou černé.
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).

@@ -13,7 +13,10 @@ CACHE = 'dem_cache.json'
 JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo',
          (39, 'u Vajíčko'): 'Ptačí kupy', (39, 'Ořešník'): 'Velký Štolpich', (39, 'Holubník'): 'Malý Štolpich',
          (41, 'Skála'): 'Paličník', (45, 'Kočičí kameny'): 'Francouzské kameny',
-         (42, 'Šolcova stěna'): 'Šolcovy kameny', (42, 'Stojka'): 'Hlídači'}
+         (42, 'Šolcova stěna'): 'Šolcovy kameny', (42, 'Stojka'): 'Hlídači',
+         (621, 'Brdo'): 'Milíř', (43, 'Kopřivník'): 'Koňská hlava'}
+ROZDEL = {(44, 'Dolní Lysá skála'): ['Stržový vrch', 'Kopřivník']}  # skupina -> objekty k nejbližšímu z vrcholů OSM
+PRESUN = {17959: 'Dračí vrch'}  # Atlas draků; objekt -> podsektor téhož sektoru
 
 def get(url, data=None, pokus=8):
     for i in range(pokus):
@@ -97,9 +100,16 @@ for sid, sn in db.execute('SELECT id, nazev FROM sektor').fetchall():
         if p and km((p['lat'], p['lon']), (a, b)) < 1.5: n = p['tags']['name']; volne.remove(p)
         else: n = 'u ' + max((obj[i] for i in x), key=lambda o: h(o[1], o[2]))[3]
         n = JMENA.get((sid, n), n)
-        pid = (db.execute('SELECT id FROM podsektor WHERE sektor_id=? AND nazev=?', (sid, n)).fetchone() or
-               [db.execute('INSERT INTO podsektor(sektor_id,nazev,vrchol_lat,vrchol_lon,vyska) VALUES (?,?,?,?,?)',
-                           (sid, n, a, b, round(h(a, b)))).lastrowid])[0]
-        db.executemany('UPDATE objekt SET podsektor_id=? WHERE id=?', [(pid, obj[i][0]) for i in x])
-        print(f'{sn:28} {n:30} {len(x):3} obj.')
+        vr = [e for e in osm if e['tags']['name'] in ROZDEL.get((sid, n), ())]
+        casti = [(e['tags']['name'], e['lat'], e['lon'], [i for i in x if min(
+                  vr, key=lambda v: km((v['lat'], v['lon']), obj[i][1:3])) is e]) for e in vr] or [(n, a, b, x)]
+        for n, a, b, y in casti:
+            pid = (db.execute('SELECT id FROM podsektor WHERE sektor_id=? AND nazev=?', (sid, n)).fetchone() or
+                   [db.execute('INSERT INTO podsektor(sektor_id,nazev,vrchol_lat,vrchol_lon,vyska) VALUES (?,?,?,?,?)',
+                               (sid, n, a, b, round(h(a, b)))).lastrowid])[0]
+            db.executemany('UPDATE objekt SET podsektor_id=? WHERE id=?', [(pid, obj[i][0]) for i in y])
+            print(f'{sn:28} {n:30} {len(y):3} obj.')
+for oid, n in PRESUN.items():
+    db.execute('UPDATE objekt SET podsektor_id = (SELECT p.id FROM podsektor p JOIN objekt o ON o.sektor_id = p.sektor_id '
+               'WHERE o.id = ? AND p.nazev = ?) WHERE id = ?', (oid, n, oid))
 db.commit()
