@@ -16,15 +16,31 @@ body{background:var(--zula) url(vrstevnice.svg) center top/cover fixed}
 .table{--bs-table-bg:transparent;--bs-table-hover-bg:rgba(111,138,74,.12)}
 .badge-body{background:var(--boruvka)}
 #map{height:62vh;border-radius:.375rem}
-.koza{font-size:26px;line-height:34px;text-align:center;background:#fff;border:2px solid var(--les);border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.start{display:flex;align-items:center;justify-content:center;background:var(--raselina);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 </style></head><body>
-<nav class="navbar navbar-dark mb-3"><div class="container"><span class="navbar-brand">🐐 Jizerský Qaker <span class="fw-light opacity-75">– věže</span></span>
+<nav class="navbar navbar-dark mb-3"><div class="container"><span class="navbar-brand">Jizerský Qaker <span class="fw-light opacity-75">– věže</span></span>
 <span class="navbar-text small">start Hausmanka, Oldřichovské sedlo</span></div></nav>
 <main class="container pb-5">
 <div class="card mb-3"><div class="card-body small text-body-secondary">
 Zdroj: databáze skal ČHS, oblast Jizerské hory. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru; sektory jsou na mapě barevné plochy.
 <b>Body = body za sektor + body za stupeň nejlehčí cesty.</b> Body za sektor jsou fixní dle pořadatele, „?“ = zatím neurčeny.
 Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
+<div class="card mb-3" id="propozice"><div class="card-header"><h2 class="h5 mb-0">Propozice závodu</h2></div>
+<div class="card-body"><div class="row g-4">
+<div class="col-md-6"><dl class="row mb-0 small">
+<dt class="col-5">Termín</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+<dt class="col-5">Start a cíl</dt><dd class="col-7">Hausmanka, Oldřichovské sedlo</dd>
+<dt class="col-5">Časový limit</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+<dt class="col-5">Družstva</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+<dt class="col-5">Přihlášky, startovné</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+<dt class="col-5">Povinná výbava</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+<dt class="col-5">Doložení výstupu</dt><dd class="col-7 text-body-secondary">doplní pořadatel</dd>
+</dl></div>
+<div class="col-md-6 small">
+<p class="mb-2"><b>Bodování:</b> body objektu = body sektoru + body nejlehčí cesty na objekt.</p>
+<p class="mb-2"><b>Klasifikace:</b> I–VI = 1–6 b, dále každý stupeň +1 (VIb 7, VIc 8, VII 9, VIIb 10 …). Přeskok N = 2N b. Ledy a drytool se nehodnotí.</p>
+<p class="mb-1"><b>Body sektorů:</b></p><div id="bodySektoru" class="d-flex flex-wrap gap-1"></div>
+</div></div></div></div>
 <div class="card mb-3 p-1"><div id="map"></div></div>
 <div class="card mb-3"><div class="card-body row g-2 align-items-center">
 <div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
@@ -39,12 +55,12 @@ const mapy=r=>`https://mapy.cz/turisticka?source=coor&id=${r.lon},${r.lat}&x=${r
 const pts=r=>r.body!=null?r.body:(r.body_cesta!=null?'?':'');
 const map=L.map('map').setView([50.86,15.2],11);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
-L.marker(HAUSMANKA,{icon:L.divIcon({className:'koza',html:'🐐',iconSize:[38,38]}),zIndexOffset:1000}).addTo(map).bindPopup('<b>Start</b><br>Hausmanka u Kozy');
+L.marker(HAUSMANKA,{icon:L.divIcon({className:'start',html:'<svg viewBox="0 0 24 24" width="20" height="20"><path fill="#fff" d="M12 3 2 12h3v8h5v-5h4v5h5v-8h3z"/></svg>',iconSize:[34,34]}),zIndexOffset:1000}).addTo(map).bindPopup('<b>Start</b><br>Hausmanka u Kozy');
 const mk={};
 function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal (monotone chain)
  const x=(o,a,b)=>(a[1]-o[1])*(b[0]-o[0])-(a[0]-o[0])*(b[1]-o[1]),h=(Q)=>{const H=[];for(const p of Q){while(H.length>1&&x(H[H.length-2],H[H.length-1],p)<=0)H.pop();H.push(p);}H.pop();return H;};
  return h(P).concat(h(P.reverse()));}
-fetch('data.json').then(r=>r.json()).then(D=>{
+fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
  const secs=[...new Set(D.map(r=>r.sektor))];
  const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${secs.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
  const med=a=>a.sort((x,y)=>x-y)[a.length>>1];
@@ -59,6 +75,8 @@ fetch('data.json').then(r=>r.json()).then(D=>{
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
   .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
  secs.forEach(s=>sec.add(new Option(s,s)));
+ bodySektoru.innerHTML=secs.map(S=>[S,D.find(r=>r.sektor===S).body_sektor]).sort((a,b)=>(a[1]??9)-(b[1]??9))
+  .map(([S,b])=>`<span class="badge rounded-pill border text-body" style="border-color:${barva(S)}!important;border-width:2px!important">${S} <b>${b??'?'}</b></span>`).join('');
  function draw(){
   const t=q.value.toLowerCase(),s=sec.value;let n=0,h='';
   for(const S of secs){if(s&&S!==s)continue;

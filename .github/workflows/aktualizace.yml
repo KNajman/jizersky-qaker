@@ -1,0 +1,19 @@
+# Aktualizace dat z ČHS – jen ručně (Actions -> Aktualizace dat -> Run workflow), žádný rozvrh.
+name: Aktualizace dat
+on: workflow_dispatch
+permissions:
+  contents: write
+jobs:
+  aktualizace:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@users.noreply.github.com
+          git add jizerky.db data.json
+          git diff --cached --quiet || git commit -m "Aktualizace dat z ČHS" && git push

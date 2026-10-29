@@ -14,7 +14,8 @@ Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Pr
 - `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
-Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py`
+Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workflow (`.github/workflows/aktualizace.yml`), nebo lokálně
+`python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py`
 
 ## Pravidla bodování (potvrzeno uživatelem)
 - Body objektu = body sektoru + body nejlehčí cesty.
@@ -26,7 +27,7 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
-- Lomy se na webu nezobrazují, bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
+- Lomy, masivy a Loučeňské cimbuří (příliš daleko) se na webu nezobrazují (filtr v `export.py`), bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,
@@ -40,8 +41,8 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 ## Známé mezery
 - 44 objektů bez GPS, ~51 bez hodnotitelné cesty (doplnit případně z lezec.cz / skalnioblasti.cz).
 - Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
-- Propozice závodu zatím nedostupné.
+- Propozice závodu: sekce nad mapou, chybějící údaje označeny „doplní pořadatel“.
 
 ## Styl
 Bootstrap 5, paleta Jizerek (smrk #23392c, mech #6f8a4a, žula #ece9e1, borůvka #4d3d6e), pozadí vrstevnice,
-start na mapě = koza 🐐. Sektory mají na mapě vlastní barvy. Komunikace česky, věcně, kritika vítána.
+start na mapě = domek, žádné logo/emoji. Sektory mají na mapě vlastní barvy. Komunikace česky, věcně, kritika vítána.
