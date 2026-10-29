@@ -119,7 +119,12 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
 </section>
 <div id="tisk"></div>
 </main>
+<footer class="py-3 small text-body-secondary" style="background:rgba(236,233,225,.95);border-top:1px solid rgba(35,57,44,.15)">
+<div class="container-fluid px-3 px-md-4 px-xl-5 d-flex flex-wrap gap-2 justify-content-between" style="max-width:1500px">
+<span>© <span id="rok">2026</span> Karel Najman</span>
+<span>Data: <a href="https://www.horosvaz.cz/skaly-oblast-43/" target="_blank">databáze skal ČHS</a> · mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a></span></div></footer>
 <script>
+rok.textContent=new Date().getFullYear();
 const HAUSMANKA=[50.8638,15.1046];
 const chs=r=>r.id>0?`https://www.horosvaz.cz/skaly-skala-${r.id}/`:'https://drive.google.com/file/d/1YAyobnJOr_nRIvBylHTEQNr-Sr4cJUUX/view';
 const mapy=r=>`https://mapy.cz/turisticka?source=coor&id=${r.lon},${r.lat}&x=${r.lon}&y=${r.lat}&z=17`;
