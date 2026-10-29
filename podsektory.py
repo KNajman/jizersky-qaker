@@ -9,6 +9,8 @@ KROK = 0.0005       # ° zeměpisné šířky (~55 m), délka se škáluje cos(�
 OKRAJ = 0.004       # ° kolem objektů sektoru
 BEZ = {40}          # Odlehlé skály – rozeseté po celých horách, bez podsektorů
 CACHE = 'dem_cache.json'
+# ruční názvy (dle pořadatele): (sektor, automatický název) -> název
+JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo'}
 
 def get(url, data=None, pokus=8):
     for i in range(pokus):
@@ -91,6 +93,7 @@ for sid, sn in db.execute('SELECT id, nazev FROM sektor').fetchall():
         p = min(volne, key=lambda e: km((e['lat'], e['lon']), (a, b)), default=None)
         if p and km((p['lat'], p['lon']), (a, b)) < 1.5: n = p['tags']['name']; volne.remove(p)
         else: n = 'u ' + max((obj[i] for i in x), key=lambda o: h(o[1], o[2]))[3]
+        n = JMENA.get((sid, n), n)
         pid = db.execute('INSERT INTO podsektor(sektor_id,nazev,vrchol_lat,vrchol_lon,vyska) VALUES (?,?,?,?,?)',
                          (sid, n, a, b, round(h(a, b)))).lastrowid
         db.executemany('UPDATE objekt SET podsektor_id=? WHERE id=?', [(pid, obj[i][0]) for i in x])
