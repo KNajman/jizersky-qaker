@@ -36,6 +36,7 @@ for col in ('pesky_km REAL', 'stoupani_m INTEGER', 'klesani_m INTEGER', 'cil_lat
 
 for sid, nazev in db.execute('SELECT id, nazev FROM sektor').fetchall():
     obj = db.execute('SELECT lat, lon FROM objekt WHERE sektor_id=? AND lat IS NOT NULL', (sid,)).fetchall()
+    if not obj: continue  # sektor sloučený do jiného (doplnky.py)
     t = (sum(o[0] for o in obj)/len(obj), sum(o[1] for o in obj)/len(obj))
     ruc = db.execute('SELECT cil_lat, cil_lon FROM sektor WHERE id=?', (sid,)).fetchone()
     cil = ruc if ruc and ruc[0] is not None else min(obj, key=lambda o: km(o, t))  # ručně zadaný cíl má přednost

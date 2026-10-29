@@ -78,6 +78,10 @@ for oid, cesty in CESTY.items():
         db.execute('INSERT INTO cesta VALUES (?,?,?,?,?)', (cid, oid, n, z, z.split('-')[0]))
 db.execute('UPDATE objekt SET podsektor_id = NULL')
 db.execute('DELETE FROM podsektor')
+# celý sektor ČHS jako podsektor jiného sektoru (dle pořadatele): sektor ČHS -> (sektor, podsektor)
+for z, (sid, n) in {SVA: (STO, 'Svah pod Aplitovými skalami')}.items():
+    pid = db.execute('INSERT INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n)).lastrowid
+    db.execute('UPDATE objekt SET sektor_id=?, podsektor_id=? WHERE sektor_id=?', (sid, pid, z))
 for sid, ps in PODSEKTORY.items():
     ved = []
     for n, v in ps.items():
@@ -86,7 +90,8 @@ for sid, ps in PODSEKTORY.items():
         if not o: print('vedoucí objekt nenalezen (nebo bez GPS):', v); continue
         pid = db.execute('INSERT INTO podsektor(sektor_id,nazev,vedouci_id) VALUES (?,?,?)', (sid, n, o[0])).lastrowid
         ved.append((pid, o[1], o[2]))
-    for oid, lat, lon in db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND lat IS NOT NULL', (sid,)).fetchall() if ved else []:
+    for oid, lat, lon in db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND lat IS NOT NULL '
+                                    'AND podsektor_id IS NULL', (sid,)).fetchall() if ved else []:
         pid = min(ved, key=lambda p: (p[1] - lat) ** 2 + ((p[2] - lon) * 0.63) ** 2)[0]  # cos 50,9° ≈ 0,63
         db.execute('UPDATE objekt SET podsektor_id=? WHERE id=?', (pid, oid))
 db.commit()
