@@ -40,6 +40,11 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,
   bod je uložen v `sektor.cil_lat/cil_lon` a lze ho ručně přepsat.
 
+## Záložky (index.html)
+Lepivé menu: Průvodce (neaktivní, připravujeme), Qaker (výchozí; podmenu Propozice / Mapa / Objekty), Cracker (jaro 2027),
+Člověk (propozice + mapa jen sektoru Stržový vrch a Kopřivník). Přepínání přes #hash, jeden soubor.
+Tisk (tlačítko Tisk / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první sloupec slaňák.
+
 ## Mapa
 - Podsektory: automaticky podle terénu (`podsektory.py`), hranice vedou údolími. Výjimka: Svah pod Aplitovými
   skalami (v ČHS samostatný sektor) je ručně podsektorem Štolpichu. Ruční úpravy v `podsektory.py`: JMENA (přejmenování/sloučení),
