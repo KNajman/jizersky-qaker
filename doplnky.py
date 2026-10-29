@@ -50,11 +50,12 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
 # podsektory: název -> vedoucí objekt (název objektu v sektoru); objekty sektoru s GPS
 # se přiřadí k nejbližšímu vedoucímu objektu. Podsektor bez vedoucího objektu se přeskočí.
 PODSEKTORY = {
-    STR: {'Kančí vrch': None, 'Strmý vrch': None, 'Špičák': None, 'Stržový vrch': None, 'Kopřivník': None},
-    SRA: {'Koňská hlava': None, 'Srázy': None, 'Poledník': None},
-    STO: {'Malý Štolpich': None, 'Velký Štolpich': None, 'Zahradní stráň': None},
-    POL: {'Hlídači koutu a Nos': None, 'Polední kameny': None, 'Šolcovy skály': None},
-    TIS: {'Tišina': None, 'Francouzské kameny': None},
+    STR: {'Kančí vrch': 'Rysí kámen', 'Strmý vrch': 'Stoun', 'Špičák': 'Důlní skála',
+          'Stržový vrch': 'Uhlířova čapka', 'Kopřivník': 'Gorila'},
+    SRA: {'Koňská hlava': 'Koňská hlava', 'Srázy': 'Srázy', 'Poledník': 'Kozel'},
+    STO: {'Malý Štolpich': 'Divá Maří', 'Velký Štolpich': 'Kapucín', 'Zahradní stráň': 'Stojka'},
+    POL: {'Hlídači koutu a Nos': 'Nos', 'Polední kameny': 'Polední věž', 'Šolcovy skály': 'Hromová věž'},
+    TIS: {'Tišina': 'Věž Grálu', 'Francouzské kameny': 'Francouzská čapka'},
 }
 
 db = sqlite3.connect('jizerky.db')
@@ -81,7 +82,7 @@ for sid, ps in PODSEKTORY.items():
     ved = []
     for n, v in ps.items():
         if not v: continue
-        o = db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND nazev=? AND lat IS NOT NULL', (sid, v)).fetchone()
+        o = db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND nazev=? COLLATE NOCASE AND lat IS NOT NULL', (sid, v)).fetchone()
         if not o: print('vedoucí objekt nenalezen (nebo bez GPS):', v); continue
         pid = db.execute('INSERT INTO podsektor(sektor_id,nazev,vedouci_id) VALUES (?,?,?)', (sid, n, o[0])).lastrowid
         ved.append((pid, o[1], o[2]))
