@@ -22,11 +22,13 @@ for oid, n in db.execute('SELECT id, nazev FROM objekt').fetchall():
     if k in so: db.execute('UPDATE objekt SET so_id=?, druh=? WHERE id=?', (*so[k], oid))
     else: nic.append(n)
 db.execute("UPDATE objekt SET druh='kámen' WHERE typ='boulder'")  # boulder = kámen (dle pořadatele)
-db.execute("UPDATE objekt SET druh='masiv' WHERE druh IS NULL AND masiv=1")  # „- M“ v ČHS
-db.execute("UPDATE objekt SET druh='lom' WHERE typ='lom' OR nazev LIKE 'Lom %'")
-for vzor, d in (('%věž%', 'věž'), ('%kámen%', 'kámen'), ('%masiv%', 'masiv')):  # zbylé bez shody podle názvu
+for vzor, d in (('%věž%', 'věž'), ('%kámen%', 'kámen')):  # bez shody podle názvu
     db.execute("UPDATE objekt SET druh=? WHERE druh IS NULL AND nazev LIKE ?", (d, vzor))
-db.execute("UPDATE objekt SET druh='masiv' WHERE nazev LIKE '%stěn%' AND druh IS NOT 'lom'")  # stěny = masiv (dle pořadatele)
+# pravidla pořadatele: „- M“ v ČHS (kromě věží) a stěny, plotny, předskalí, masivy = masiv; lomy = lom
+db.execute("UPDATE objekt SET druh='masiv' WHERE masiv=1 AND nazev NOT LIKE '%věž%'")
+for vzor in ('%masiv%', '%masív%', '%stěn%', '%plotn%', '%předskal%'):
+    db.execute("UPDATE objekt SET druh='masiv' WHERE nazev LIKE ?", (vzor,))
+db.execute("UPDATE objekt SET druh='lom' WHERE typ='lom' OR nazev LIKE 'Lom %'")
 RUCNE = {16979: 'kámen', 8345: 'masiv', 17722: 'kámen', 17718: 'kámen'}  # Tank B, Vodopádový solitér, Tlustoprd, Skalní hřib
 db.executemany('UPDATE objekt SET druh=? WHERE id=?', [(d, i) for i, d in RUCNE.items()])
 db.commit()
