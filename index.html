@@ -77,11 +77,12 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
 <p class="mb-2"><b>Klasifikace:</b> I–VI = 1–6 b, dále každý stupeň +1 (VIb 7, VIc 8, VII 9, VIIb 10 …). Přeskok N = 2N b.</p>
 <p class="mb-1"><b>Body sektorů:</b></p><div id="bodySektoru"></div>
 </div></div></div></div>
+<button id="tiskni" class="btn btn-lg w-100 mb-3 text-white" style="background:var(--les)">Vytisknout seznam objektů (A4)</button>
 <div class="card mb-3 p-1" id="mapa"><div id="map"></div></div>
 <div class="card mb-3" id="objekty"><div class="card-body row g-2 align-items-center">
 <div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
 <div class="col-sm-5"><select id="sec" class="form-select"><option value="">všechny sektory</option></select></div>
-<div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary me-2"></span><button id="tiskni" class="btn btn-sm btn-outline-dark" title="všechny objekty na jednu A4">Tisk</button></div></div></div>
+<div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary"></span></div></div></div>
 <div id="list" class="row g-3 g-xl-4"></div>
 </section>
 <section id="v-cracker" class="view"><div class="card"><div class="card-header"><h2 class="h5 mb-0">Jizerský Cracker</h2></div>
@@ -121,7 +122,7 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
 </main>
 <footer class="py-3 small text-body-secondary" style="background:rgba(236,233,225,.95);border-top:1px solid rgba(35,57,44,.15)">
 <div class="container-fluid px-3 px-md-4 px-xl-5 d-flex flex-wrap gap-2 justify-content-between" style="max-width:1500px">
-<span>© <span id="rok">2026</span> Karel Najman</span>
+<span>© <span id="rok">2026</span> Karel Najman · <a href="https://github.com/KNajman/jizersky-qaker/issues/new" target="_blank">Nahlásit chybu</a></span>
 <span>Data: <a href="https://www.horosvaz.cz/skaly-oblast-43/" target="_blank">databáze skal ČHS</a> · mapa © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a></span></div></footer>
 <script>
 rok.textContent=new Date().getFullYear();
