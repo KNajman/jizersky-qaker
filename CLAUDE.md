@@ -32,7 +32,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Nejlehčí cesta = cesta s nejnižšími body.
 - Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“/„plotna“ v názvu (plotna i u věží),
   Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
-  (Černá věž, Hromová věž, Koráb, Zlomený kámen). Bouldery ano. Ze zápisu klasifikace export vynechává metry a RP. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
+  (Černá věž, Hromová věž, Koráb, Zlomený kámen). Ručně vyřazené objekty: VYRADIT v `export.py`. Bouldery ano. Ze zápisu klasifikace export vynechává metry a RP. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,
