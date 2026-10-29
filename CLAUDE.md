@@ -9,10 +9,11 @@ Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Pr
 - `jizerky.db` – databáze, zdroj pravdy (commitovat)
 - `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
+- `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
 - `export.py` – DB -> `data.json` (bez lomů)
 - `index.html` – web, Leaflet z cdnjs + OSM dlaždice, načítá data.json
 
-Aktualizace: `python3 nacti.py && python3 trasy.py && python3 export.py`
+Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py`
 
 ## Pravidla bodování (potvrzeno uživatelem)
 - Body objektu = body sektoru + body nejlehčí cesty.

@@ -21,7 +21,7 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</p>
 <div id="list"></div>
 <script>
 const HAUSMANKA=[50.8638,15.1046];
-const chs=r=>`https://www.horosvaz.cz/skaly-skala-${r.id}/`;
+const chs=r=>r.id>0?`https://www.horosvaz.cz/skaly-skala-${r.id}/`:'https://drive.google.com/file/d/1YAyobnJOr_nRIvBylHTEQNr-Sr4cJUUX/view';
 const mapy=r=>`https://mapy.cz/turisticka?source=coor&id=${r.lon},${r.lat}&x=${r.lon}&y=${r.lat}&z=17`;
 const pts=r=>r.body!=null?r.body:(r.body_cesta!=null?'?':'');
 const map=L.map('map').setView([50.86,15.2],11);
