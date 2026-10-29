@@ -48,6 +48,7 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
           8388: SRA, 12330: STO,               # František, Stínová věž
           17528: ODL, 17722: ODL, 17457: ODL,  # Filipovka, Tlustoprd, Pánská jízda
           17705: ODL, 17706: ODL, 17303: ODL,  # Abigor, Vorbachův kámen, Punťa
+          17412: ODL,                          # Podsvinče
           8108: ROZ, 282: ROZ}                 # Fojt, Jezdec
 db = sqlite3.connect('jizerky.db')
 try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES podsektor(id)')
