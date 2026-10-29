@@ -1,5 +1,5 @@
 """jizerky.db -> data.json pro web. Pravidla pořadatele: nezobrazují se lomy, masivy („- M“ v ČHS),
-objekty s lom/stěna/masiv/plotna v názvu, Loučeňské cimbuří a objekty bez cest (i duplicitní prázdné záznamy ČHS,
+objekty s lom/stěna/masiv/plotna/předskalí v názvu, Loučeňské cimbuří a objekty bez cest (i duplicitní prázdné záznamy ČHS,
 např. Čapí věž, Hanýsek). Věže se zobrazují vždy (kromě ploten), ZOBRAZIT vždy.
 Ze zápisu klasifikace se pro web vynechávají metry a RP."""
 import re, sqlite3, json

@@ -30,7 +30,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
-- Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“/„plotna“ v názvu (plotna i u věží),
+- Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“/„plotna“/„předskalí“ v názvu (plotna i u věží),
   Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
   (Černá věž, Hromová věž, Koráb, Zlomený kámen, Plotnová věž). Ručně vyřazené objekty: VYRADIT v `export.py`. Bouldery ano. Ze zápisu klasifikace export vynechává metry a RP. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
