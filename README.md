@@ -9,6 +9,7 @@ nejlehčí cesta, body a mapa.
 - `skripty/` – Python, spouští se z kořene repozitáře:
   - `nacti.py` – stáhne/aktualizuje data z ČHS (podle ID z ČHS)
   - `doplnky.py` – věže přidané pořadatelem, opravy GPS, přesuny mezi sektory
+  - `druhy.py` – druh objektu (věž/kámen/masiv) ze seznamu skalnioblasti.cz (`data/zdroje/`)
   - `podsektory.py` – podsektory podle terénu (numpy)
   - `trasy.py` – pěší vzdálenost a převýšení z Hausmanky, body neovlivňuje
   - `export.py` – DB -> `data.json` (filtr lomů, masivů…)
@@ -17,7 +18,7 @@ nejlehčí cesta, body a mapa.
 ## Aktualizace
 Ručně: GitHub Actions → Aktualizace dat → Run workflow, nebo lokálně:
 
-    python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py
+    python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/druhy.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py
 
 Body sektorů jsou fixní, zadávají se ručně:
     UPDATE sektor SET body = 4 WHERE nazev = 'Rudolfov';

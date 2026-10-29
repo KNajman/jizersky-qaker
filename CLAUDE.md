@@ -11,6 +11,8 @@ Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, s
 - `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
+- `druhy.py` – druh objektu (věž/kámen/masiv) ze seznamu skalnioblasti.cz v `data/zdroje/` (uložen ručně z prohlížeče,
+  web má ochranu proti robotům); boulder = kámen. Sloupce `kniha`, `slanak` (1/0/NULL) zatím bez dat.
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
   tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
@@ -18,7 +20,7 @@ Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, s
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
 Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workflow (`.github/workflows/aktualizace.yml`), nebo lokálně
-`python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py`
+`python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/druhy.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py`
 
 ## Pravidla bodování (potvrzeno uživatelem)
 - Body objektu = body sektoru + body nejlehčí cesty.
