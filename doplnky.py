@@ -4,7 +4,7 @@ import sqlite3
 
 ROZ, STR, SVA = 621, 44, 1242  # Rudolfov, Stržový vrch a Kopřivník, Svah pod Aplitovými skalami
 VRE, SRA, ODL = 1260, 43, 40  # Vřesoviště, Srázy a Poledník, Odlehlé skály
-STO, POL, TIS = 39, 42, 45  # Malý a Velký Štolpich, Polední kameny a Hlídači, Tišina a Smrk
+STO = 39  # Malý a Velký Štolpich
 # id, sektor, název, lat, lon
 OBJEKTY = [
     (-1, ROZ, 'Malý Strážce', 50.8173003, 15.1181425),
@@ -47,17 +47,6 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
           8388: SRA, 12330: STR,               # František, Stínová věž
           17528: ODL, 17722: ODL, 17457: ODL,  # Filipovka, Tlustoprd, Pánská jízda
           8108: ROZ, 282: ROZ}                 # Fojt, Jezdec
-# podsektory: název -> vedoucí objekt (název objektu v sektoru); objekty sektoru s GPS
-# se přiřadí k nejbližšímu vedoucímu objektu. Podsektor bez vedoucího objektu se přeskočí.
-PODSEKTORY = {
-    STR: {'Kančí vrch': 'Rysí kámen', 'Strmý vrch': 'Stoun', 'Špičák': 'Důlní skála',
-          'Stržový vrch': 'Uhlířova čapka', 'Kopřivník': 'Gorila'},
-    SRA: {'Koňská hlava': 'Koňská hlava', 'Srázy': 'Srázy', 'Poledník': 'Kozel'},
-    STO: {'Malý Štolpich': 'Divá Maří', 'Velký Štolpich': 'Kapucín', 'Zahradní stráň': 'Stojka'},
-    POL: {'Hlídači koutu a Nos': 'Nos', 'Polední kameny': 'Polední věž', 'Šolcovy skály': 'Hromová věž'},
-    TIS: {'Tišina': 'Věž Grálu', 'Francouzské kameny': 'Francouzská čapka'},
-}
-
 db = sqlite3.connect('jizerky.db')
 try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES podsektor(id)')
 except sqlite3.OperationalError: pass  # sloupec už existuje
@@ -76,23 +65,10 @@ for oid, cesty in CESTY.items():
     for n, z in cesty:
         cid -= 1
         db.execute('INSERT INTO cesta VALUES (?,?,?,?,?)', (cid, oid, n, z, z.split('-')[0]))
-db.execute('UPDATE objekt SET podsektor_id = NULL')
-db.execute('DELETE FROM podsektor')
 # celý sektor ČHS jako podsektor jiného sektoru (dle pořadatele): sektor ČHS -> (sektor, podsektor)
 for z, (sid, n) in {SVA: (STO, 'Svah pod Aplitovými skalami')}.items():
-    pid = db.execute('INSERT INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n)).lastrowid
+    db.execute('INSERT OR IGNORE INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n))
+    pid = db.execute('SELECT id FROM podsektor WHERE sektor_id=? AND nazev=?', (sid, n)).fetchone()[0]
     db.execute('UPDATE objekt SET sektor_id=?, podsektor_id=? WHERE sektor_id=?', (sid, pid, z))
-for sid, ps in PODSEKTORY.items():
-    ved = []
-    for n, v in ps.items():
-        if not v: continue
-        o = db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND nazev=? COLLATE NOCASE AND lat IS NOT NULL', (sid, v)).fetchone()
-        if not o: print('vedoucí objekt nenalezen (nebo bez GPS):', v); continue
-        pid = db.execute('INSERT INTO podsektor(sektor_id,nazev,vedouci_id) VALUES (?,?,?)', (sid, n, o[0])).lastrowid
-        ved.append((pid, o[1], o[2]))
-    for oid, lat, lon in db.execute('SELECT id, lat, lon FROM objekt WHERE sektor_id=? AND lat IS NOT NULL '
-                                    'AND podsektor_id IS NULL', (sid,)).fetchall() if ved else []:
-        pid = min(ved, key=lambda p: (p[1] - lat) ** 2 + ((p[2] - lon) * 0.63) ** 2)[0]  # cos 50,9° ≈ 0,63
-        db.execute('UPDATE objekt SET podsektor_id=? WHERE id=?', (pid, oid))
 db.commit()
 print(len(OBJEKTY), 'objektů,', -cid, 'cest doplněno')

@@ -17,11 +17,12 @@ CREATE TABLE IF NOT EXISTS klasifikace (
   body   INTEGER NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS podsektor (     -- ruční členění sektoru, plní doplnky.py
+CREATE TABLE IF NOT EXISTS podsektor (     -- členění sektoru podle terénu, plní podsektory.py
   id        INTEGER PRIMARY KEY,
   sektor_id INTEGER NOT NULL REFERENCES sektor(id),
   nazev     TEXT NOT NULL,
-  vedouci_id INTEGER REFERENCES objekt(id),   -- objekty se přiřadí k nejbližšímu vedoucímu objektu
+  vrchol_lat REAL, vrchol_lon REAL, vyska INTEGER, -- vrchol, ke kterému objekty „stékají“;
+                                                   -- NULL = celý sektor ČHS (doplnky.py), podsektory.py nepřepisuje
   UNIQUE (sektor_id, nazev)
 );
 

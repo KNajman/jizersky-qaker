@@ -10,12 +10,14 @@ Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Pr
 - `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
+- `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
+  tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
 - `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
 Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workflow (`.github/workflows/aktualizace.yml`), nebo lokálně
-`python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py`
+`python3 nacti.py && python3 doplnky.py && python3 podsektory.py && python3 trasy.py && python3 export.py`
 
 ## Pravidla bodování (potvrzeno uživatelem)
 - Body objektu = body sektoru + body nejlehčí cesty.
@@ -34,8 +36,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
   bod je uložen v `sektor.cil_lat/cil_lon` a lze ho ručně přepsat.
 
 ## Mapa
-- Podsektory: v `doplnky.py` (PODSEKTORY) se zadá vedoucí objekt, ostatní objekty sektoru s GPS
-  se přiřadí k nejbližšímu. Na mapě menší čárkované plochy, body neovlivňují.
+- Podsektory: automaticky podle terénu (`podsektory.py`), hranice vedou údolími. Výjimka: Svah pod Aplitovými
+  skalami (v ČHS samostatný sektor) je ručně podsektorem Štolpichu. Na mapě menší čárkované plochy, body neovlivňují.
 - Sektor = konvexní obal jeho objektů (+~80 m) s vlastní barvou, objekty mají barvu sektoru.
   Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají, body jsou černé.
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
