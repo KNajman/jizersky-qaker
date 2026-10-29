@@ -16,6 +16,7 @@ Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, s
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
   tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
+- `sw.js` – offline režim (stránka a data ze sítě, při výpadku z cache; mapové dlaždice se neukládají)
 - `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
@@ -35,7 +36,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Druh objektu (`objekt.druh`: věž/kámen/masiv/lom) určuje `druhy.py`: skalnioblasti.cz (bez značky věž, - K/- B kámen, - M masiv),
   boulder = kámen; pak pravidla pořadatele: „- M“ v ČHS (kromě věží) a stěna/plotna/předskalí/masiv v názvu = masiv, lom = lom; RUCNE.
 - Web (dotaz v `export.py`) ukazuje jen druh věž a kámen s GPS a cestami, bez zákazu lezení v ČHS (`objekt.zakaz`).
-  Výjimky: ZOBRAZIT (vždy, např. Černá věž, Koráb, Nos) a VYRADIT (nikdy; ruční skrytí, objekty dál než 22 km pěšky).
+  Výjimky: ZOBRAZIT (masivy, které pořadatel chce: Koráb, Nos…) a VYRADIT (jen to, co pravidla nezachytí: ruční skrytí, dál než 22 km pěšky).
   Ze zápisu klasifikace export vynechává metry a RP. Typ (skála/boulder/lom) z názvu, ruční oprava se nepřepisuje.
 
 ## Vzdálenosti
@@ -45,7 +46,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 ## Záložky (index.html)
 Lepivé menu: Průvodce (neaktivní, připravujeme), Qaker (výchozí; podmenu Propozice / Mapa / Objekty), Cracker (jaro 2027),
 Člověk (propozice + mapa jen sektoru Stržový vrch a Kopřivník). Přepínání přes #hash, jeden soubor.
-Tisk (tlačítko Tisk / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první sloupec slaňák.
+Mapy mají tlačítko „kde jsem“ (GPS telefonu). `data.json` = {aktualizace (den stažení z ČHS, tabulka meta), objekty}, datum v zápatí a v tisku.
+Tisk (tlačítko / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první sloupec slaňák.
 
 ## Mapa
 - Podsektory: automaticky podle terénu (`podsektory.py`), hranice vedou údolími. Výjimka: Svah pod Aplitovými

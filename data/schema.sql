@@ -50,6 +50,8 @@ CREATE TABLE IF NOT EXISTS cesta (
   stupen    TEXT REFERENCES klasifikace(stupen) -- NULL = nejde převést (led, AF…)
 );
 
+CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktualizace = den stažení z ČHS
+
 -- nejlehčí cesta a body se počítají, neukládají
 DROP VIEW IF EXISTS prehled;
 CREATE VIEW prehled AS

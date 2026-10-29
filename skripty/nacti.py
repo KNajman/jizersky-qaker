@@ -1,5 +1,5 @@
 """Stáhne oblast Jizerské hory z databáze ČHS do jizerky.db (opakovatelně)."""
-import urllib.error, re, html, sqlite3, urllib.request, concurrent.futures as cf
+import datetime, urllib.error, re, html, sqlite3, urllib.request, concurrent.futures as cf
 B = "https://www.horosvaz.cz"
 OBLAST = "/skaly-oblast-43/"
 RIM = ['I','II','III','IV','V','VI','VII','VIII','IX','X','XI']
@@ -85,6 +85,7 @@ for oid, sid, on in objekty:
         db.execute("INSERT OR REPLACE INTO cesta VALUES (?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z)))
 db.execute("UPDATE objekt SET masiv = (id IN (%s))" % ",".join(map(str, masivy or [0])))
 db.execute("UPDATE objekt SET zakaz = (id IN (%s))" % ",".join(map(str, zakazy or [0])))
+db.execute("INSERT OR REPLACE INTO meta VALUES ('aktualizace', ?)", (datetime.date.today().isoformat(),))
 db.commit()
 print(db.execute("SELECT (SELECT count(*) FROM sektor),(SELECT count(*) FROM objekt),"
                  "(SELECT count(*) FROM cesta),(SELECT count(*) FROM cesta WHERE stupen IS NULL)").fetchone(),
