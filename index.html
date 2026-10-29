@@ -20,7 +20,7 @@ body{background:var(--zula) url(vrstevnice.svg) center top/cover fixed}
 </style></head><body>
 <nav class="navbar navbar-dark mb-3"><div class="container"><span class="navbar-brand">Jizerský Qaker <span class="fw-light opacity-75">– věže</span></span>
 <span class="navbar-text small">pá 30. 10. 20:00 – so 31. 10. 18:00 · Hausmanka u Kozy</span></div></nav>
-<main class="container pb-5">
+<main class="container-fluid px-3 px-lg-4 pb-5" style="max-width:1900px">
 <div class="card mb-3"><div class="card-body small text-body-secondary">
 Zdroj: databáze skal ČHS, oblast Jizerské hory. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru; sektory jsou na mapě barevné plochy.
 <b>Body = body za sektor + body za stupeň nejlehčí cesty.</b> Body za sektor jsou fixní dle pořadatele, „?“ = zatím neurčeny.
@@ -45,7 +45,7 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
 <div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
 <div class="col-sm-5"><select id="sec" class="form-select"><option value="">všechny sektory</option></select></div>
 <div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary"></span></div></div></div>
-<div id="list"></div>
+<div id="list" class="row g-3"></div>
 </main>
 <script>
 const HAUSMANKA=[50.8638,15.1046];
@@ -60,7 +60,8 @@ function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal 
  const x=(o,a,b)=>(a[1]-o[1])*(b[0]-o[0])-(a[0]-o[0])*(b[1]-o[1]),h=(Q)=>{const H=[];for(const p of Q){while(H.length>1&&x(H[H.length-2],H[H.length-1],p)<=0)H.pop();H.push(p);}H.pop();return H;};
  return h(P).concat(h(P.reverse()));}
 fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
- const secs=[...new Set(D.map(r=>r.sektor))];
+ const bs=S=>D.find(r=>r.sektor===S).body_sektor??99;  // seřazeno podle bodů za sektor, pak abecedně
+ const secs=[...new Set(D.map(r=>r.sektor))].sort((a,b)=>bs(a)-bs(b)||a.localeCompare(b,'cs'));
  const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${secs.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
  const med=a=>a.sort((x,y)=>x-y)[a.length>>1];
  for(const S of secs){if(S==='Odlehlé skály')continue;  // rozeseté po celých horách, jen body
@@ -88,13 +89,13 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
    const rows=D.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));
    if(!rows.length)continue;n+=rows.length;
    const b=rows[0].body_sektor,f=rows[0];
-   h+=`<div class="card sektor mb-3" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
+   h+=`<div class="col-12 col-md-6 col-xxl-4"><div class="card sektor h-100" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
    <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
    rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
    <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
-   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';}
+   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}
  list.onclick=e=>{const z=e.target.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();
