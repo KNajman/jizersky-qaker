@@ -27,7 +27,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
-- Lomy, masivy a Loučeňské cimbuří (příliš daleko) se na webu nezobrazují (filtr v `export.py`), bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
+- Lomy, masivy, Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS) se na webu nezobrazují (filtr v `export.py`), bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,
@@ -39,7 +39,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
 
 ## Známé mezery
-- 44 objektů bez GPS, ~51 bez hodnotitelné cesty (doplnit případně z lezec.cz / skalnioblasti.cz).
+- Objekty bez GPS se na webu ukazují jen v seznamu (doplnit případně z lezec.cz / skalnioblasti.cz).
 - Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
 - Propozice závodu: sekce nad mapou, chybějící údaje označeny „doplní pořadatel“.
 
