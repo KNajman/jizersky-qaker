@@ -5,7 +5,8 @@ Ze zápisu klasifikace se pro web vynechávají metry a RP."""
 import re, sqlite3, json
 ZOBRAZIT = {'Černá věž', 'Hromová věž', 'Koráb', 'Zlomený kámen', 'Plotnová věž'}
 VYRADIT = {8387, 8415,  # Kočičí kámen (vedou na něj schody), Podsvětí (masiv)
-           274, 8403, 9088, 9074}  # Gumáček, Kohoutí hřeben, Paličník, Bivak
+           274, 8403, 9088, 9074,  # Gumáček, Kohoutí hřeben, Paličník, Bivak
+           15801, 17168, 18483, 16486, 16253, 17245, 19279, 19280, 16947, 16252, 12448}  # Vrátnej, Náhrobní kámen, Patka, Vodojem, Boží Muka, Bushman, Dračí doupě, Fojtecký drak, Páže, Špičoun (Raketa), Tvrz
 VEN = re.compile(r'lom|stěn|masiv|masív', re.I)
 db = sqlite3.connect("data/jizerky.db"); db.row_factory = sqlite3.Row
 rows = [dict(r) for r in db.execute(
