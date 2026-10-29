@@ -1,0 +1,52 @@
+<!doctype html><html lang="cs"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jizerský Qaker – podklady</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{--fg:#111;--bg:#fff;--line:#ccc;--mute:#666}
+@media (prefers-color-scheme:dark){:root{--fg:#eee;--bg:#111;--line:#444;--mute:#999}}
+body{font:15px/1.5 system-ui,sans-serif;color:var(--fg);background:var(--bg);max-width:1000px;margin:0 auto;padding:1rem}
+#map{height:60vh;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:3px 6px;text-align:left;vertical-align:top}
+td.n,th.n{text-align:right}a{color:inherit}.m{color:var(--mute)}input,select{font:inherit;padding:3px;margin:0 6px 6px 0}
+</style></head><body>
+<h1>Jizerský Qaker – věže</h1>
+<p class="m">Zdroj: databáze skal ČHS, oblast Jizerské hory. Start: Hausmanka, Oldřichovské sedlo. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru (na mapě modrý špendlík). Body za sektor jsou fixní dle pořadatele.
+Body = body za sektor + body za stupeň nejlehčí cesty. „?“ = body sektoru zatím neurčeny.
+Před lezením ověř aktuální zákazy na horosvaz.cz.</p>
+<div id="map"></div>
+<p><input id="q" placeholder="hledat objekt"><select id="sec"><option value="">všechny sektory</option></select>
+<span id="cnt" class="m"></span></p>
+<div id="list"></div>
+<script>
+const HAUSMANKA=[50.8638,15.1046];
+const chs=r=>`https://www.horosvaz.cz/skaly-skala-${r.id}/`;
+const mapy=r=>`https://mapy.cz/turisticka?source=coor&id=${r.lon},${r.lat}&x=${r.lon}&y=${r.lat}&z=17`;
+const pts=r=>r.body!=null?r.body:(r.body_cesta!=null?'?':'');
+const map=L.map('map').setView([50.86,15.2],11);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
+L.marker(HAUSMANKA).addTo(map).bindPopup('<b>Start</b><br>Hausmanka u Kozy');
+const mk={};const cile=new Set();
+fetch('data.json').then(r=>r.json()).then(D=>{
+ D.forEach(r=>{if(r.cil_lat!=null&&!cile.has(r.sektor)){cile.add(r.sektor);L.marker([r.cil_lat,r.cil_lon],{opacity:.6}).addTo(map).bindPopup(`<b>${r.sektor}</b><br>měřený bod: ${r.pesky_km} km, +${r.stoupani_m} / −${r.klesani_m} m`);}
+  if(r.lat==null)return;
+  mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:'#c22'}).addTo(map)
+  .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
+ const secs=[...new Set(D.map(r=>r.sektor))];
+ secs.forEach(s=>sec.add(new Option(s,s)));
+ function draw(){
+  const t=q.value.toLowerCase(),s=sec.value;let n=0,h='';
+  for(const S of secs){if(s&&S!==s)continue;
+   const rows=D.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));
+   if(!rows.length)continue;n+=rows.length;
+   const b=rows[0].body_sektor,f=rows[0];
+   h+=`<h2>${S} <span class="m">(${rows.length} obj., sektor ${b??'?'} b${f.pesky_km!=null?`, ${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''})</span></h2><table><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="n">Body</th><th>Mapa</th></tr>`+
+   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class=m>('+r.typ+')</span>':''}</td>
+   <td>${r.cesta||'<span class=m>–</span>'}</td><td>${r.zapis||''}</td><td class="n">${pts(r)}</td>
+   <td>${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class=m>bez GPS</span>'}</td></tr>`).join('')+'</table>';}
+  list.innerHTML=h;cnt.textContent=n+' objektů';}
+ list.onclick=e=>{const z=e.target.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();scrollTo(0,0);}};
+ [q,sec].forEach(el=>el.oninput=draw);draw();
+});
+</script></body></html>
