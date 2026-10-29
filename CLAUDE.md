@@ -33,7 +33,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
 - Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“/„plotna“/„předskalí“ v názvu (plotna i u věží),
-  Loučeňské cimbuří (příliš daleko), objekty bez GPS a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
+  Loučeňské cimbuří (příliš daleko), objekty se zákazem lezení v ČHS (`objekt.zakaz`, ikona na stránce sektoru), objekty bez GPS a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
   (Černá věž, Hromová věž, Koráb, Zlomený kámen, Plotnová věž). Ručně vyřazené objekty: VYRADIT v `export.py` (vč. Odlehlých skal dál než 22 km pěšky). Bouldery ano. Ze zápisu klasifikace export vynechává metry a RP. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
@@ -55,7 +55,7 @@ Tisk (tlačítko Tisk / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, p
 
 ## Známé mezery
 - Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).
-- Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
+- Zákazy lezení: jen ikona „Zákaz lezení“ u objektu v ČHS (`nacti.py`); částečné a dočasné zákazy se neřeší.
 - Propozice závodu: sekce nad mapou v index.html (termín 30.–31. 10. 2026, kategorie, doložení výstupu);
   program (18:00 prezence, losování 50 věží), startovné 300 Kč/tým, přespání u Kozy, útrata.
 
