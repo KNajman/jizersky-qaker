@@ -70,9 +70,13 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
   const P=rows.flatMap(r=>[[r.lat+.0007,r.lon],[r.lat-.0007,r.lon],[r.lat,r.lon+.0011],[r.lat,r.lon-.0011]]); // ~80 m kolem objektů
   L.polygon(obal(P),{color:barva(S),weight:2,fillOpacity:.15}).addTo(map)
   .bindPopup(`<b>${S}</b><br>sektor ${f.body_sektor??'?'} b${f.pesky_km!=null?`<br>${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''}`);}
+ for(const P of new Set(D.filter(r=>r.podsektor).map(r=>r.sektor+'|'+r.podsektor))){const [S,N]=P.split('|');
+  const rows=D.filter(r=>r.sektor===S&&r.podsektor===N&&r.lat!=null);
+  L.polygon(obal(rows.flatMap(r=>[[r.lat+.0004,r.lon],[r.lat-.0004,r.lon],[r.lat,r.lon+.0006],[r.lat,r.lon-.0006]])),
+   {color:barva(S),weight:1,dashArray:'4 4',fillOpacity:.1}).addTo(map).bindPopup(`<b>${N}</b><br>${S}`);}
  D.forEach(r=>{if(r.lat==null)return;
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
-  .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
+  .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
  secs.forEach(s=>sec.add(new Option(s,s)));
  bodySektoru.innerHTML=secs.map(S=>[S,D.find(r=>r.sektor===S).body_sektor]).sort((a,b)=>(a[1]??9)-(b[1]??9))
   .map(([S,b])=>`<span class="badge rounded-pill border text-body" style="border-color:${barva(S)}!important;border-width:2px!important">${S} <b>${b??'?'}</b></span>`).join('');
@@ -86,7 +90,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
    <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
-   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}</td>
+   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
    <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
    <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}

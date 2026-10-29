@@ -5,7 +5,7 @@ Statický web (GitHub Pages) s přehledem lezeckých objektů oblasti Jizerské 
 Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Princip: KISS.
 
 ## Soubory
-- `schema.sql` – SQLite schéma (česky): sektor, klasifikace, objekt, cesta, pohled prehled
+- `schema.sql` – SQLite schéma (česky): sektor, podsektor, klasifikace, objekt, cesta, pohled prehled
 - `jizerky.db` – databáze, zdroj pravdy (commitovat)
 - `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
@@ -34,6 +34,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
   bod je uložen v `sektor.cil_lat/cil_lon` a lze ho ručně přepsat.
 
 ## Mapa
+- Podsektory: v `doplnky.py` (PODSEKTORY) se zadá vedoucí objekt, ostatní objekty sektoru s GPS
+  se přiřadí k nejbližšímu. Na mapě menší čárkované plochy, body neovlivňují.
 - Sektor = konvexní obal jeho objektů (+~80 m) s vlastní barvou, objekty mají barvu sektoru.
   Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají, body jsou černé.
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
