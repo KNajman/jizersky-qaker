@@ -50,6 +50,14 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
           17705: ODL, 17706: ODL, 17303: ODL,  # Abigor, Vorbachův kámen, Punťa
           17412: ODL,                          # Podsvinče
           8108: ROZ, 282: ROZ}                 # Fojt, Jezdec
+# objekty se slaňovacím kruhem (dle pořadatele, 30. 10. 2026)
+SLANAK = [277, 8314, 8315, 8991, 6003, 6001, 9036, 6002, 8323,  # Stržák: Sněhulák … Pyramida
+          7279, 8393, 9054, 8327, 8328, 7280, 7479, 8329, 8330, 8331, 8332, 8334, 8335, 8388,  # Srázy, František
+          8340, 8341, 8342, 9073, 9071, 8343, 9076, 8349, 8353,  # Štolpich
+          8364, 8992, 8366, 8398, 8367, 8368, 8370, 8993,  # Polední kameny a Hlídači
+          8997, 9077, 8375, 8376, 8377, 9068,  # Paličník
+          8406, 8995, 74, 5595, 8386, 3607, 9055, 9078,  # Tišina a Smrk
+          275, 9057, 8390, 9065]  # Ježíškův kámen, Žihadlo, Čertův kámen, Medvědí hlavička
 db = sqlite3.connect('data/jizerky.db')
 try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES podsektor(id)')
 except sqlite3.OperationalError: pass  # sloupec už existuje
@@ -64,6 +72,7 @@ for oid, (lat, lon) in GPS.items():
     db.execute('UPDATE objekt SET lat=?, lon=? WHERE id=?', (lat, lon, oid))
 for oid, sid in SEKTOR.items():
     db.execute('UPDATE objekt SET sektor_id=? WHERE id=?', (sid, oid))
+db.executemany('UPDATE objekt SET slanak=1 WHERE id=?', [(i,) for i in SLANAK])
 db.execute('DELETE FROM cesta WHERE id < 0')
 cid = 0
 for oid, cesty in CESTY.items():

@@ -12,7 +12,7 @@ Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, s
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
 - `druhy.py` – druh objektu (věž/kámen/masiv) ze seznamu skalnioblasti.cz v `data/zdroje/` (uložen ručně z prohlížeče,
-  web má ochranu proti robotům); boulder = kámen. Sloupce `kniha`, `slanak` (1/0/NULL) zatím bez dat.
+  web má ochranu proti robotům); boulder = kámen. Sloupce `kniha`, `slanak` (1/0/NULL); slaňáky ručně v `doplnky.py` (SLANAK), na webu štítek.
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
   tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
