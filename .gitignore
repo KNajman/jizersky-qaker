@@ -1,1 +1,3 @@
-dem_cache.json
+data/dem_cache.json
+data/dem.json
+__pycache__/

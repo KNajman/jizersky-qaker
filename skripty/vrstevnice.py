@@ -13,7 +13,7 @@ def get(url, data=None):
     return json.load(urllib.request.urlopen(req, timeout=120))
 
 def dem():
-    if os.path.exists('dem.json'): return json.load(open('dem.json'))
+    if os.path.exists('data/dem.json'): return json.load(open('data/dem.json'))
     body = [(S + (N - S) * j / (NY - 1), W + (E - W) * i / (NX - 1)) for j in range(NY) for i in range(NX)]
     v = []
     for k in range(0, len(body), 100):
@@ -21,7 +21,7 @@ def dem():
         v += [r['elevation'] for r in get(f'https://api.opentopodata.org/v1/eudem25m?locations={loc}')['results']]
         time.sleep(1.1)
     g = [v[j * NX:(j + 1) * NX] for j in range(NY)]
-    json.dump(g, open('dem.json', 'w'))
+    json.dump(g, open('data/dem.json', 'w'))
     return g
 
 def hladka(g, k=4):
@@ -60,5 +60,5 @@ for e in vrch:
     svg.append(f'<path d="M{x:.0f} {y-5:.0f}l5 8h-10z"/><text x="{x+8:.0f}" y="{y+4:.0f}">'
                f'{e["tags"]["name"]} {ele}</text>')
 svg.append('</g></svg>')
-open('vrstevnice.svg', 'w', encoding='utf-8').write('\n'.join(svg))
-print(f'{lo:.0f}–{hi:.0f} m, {len(vrch)} vrcholů, {os.path.getsize("vrstevnice.svg") // 1024} kB')
+open('obrazky/vrstevnice.svg', 'w', encoding='utf-8').write('\n'.join(svg))
+print(f'{lo:.0f}–{hi:.0f} m, {len(vrch)} vrcholů, {os.path.getsize("obrazky/vrstevnice.svg") // 1024} kB')

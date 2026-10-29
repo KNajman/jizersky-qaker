@@ -8,7 +8,7 @@ DOSAH, UDOLI, MIN = 0.3, 6, 4  # km, m, objektů
 KROK = 0.0005       # ° zeměpisné šířky (~55 m), délka se škáluje cos(šířky)
 OKRAJ = 0.004       # ° kolem objektů sektoru
 BEZ = {40}          # Odlehlé skály – rozeseté po celých horách, bez podsektorů
-CACHE = 'dem_cache.json'
+CACHE = 'data/dem_cache.json'
 # ruční názvy (dle pořadatele): (sektor, automatický název) -> název; stejný název = sloučení skupin
 JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo',
          (39, 'u Vajíčko'): 'Ptačí kupy', (39, 'Ořešník'): 'Velký Štolpich', (39, 'Holubník'): 'Malý Štolpich',
@@ -69,7 +69,7 @@ if 'vrcholy' not in cache:  # pojmenované vrcholy OSM pro celé hory, jednou
     json.dump(cache, open(CACHE, 'w'))
 osm = cache['vrcholy']
 
-db = sqlite3.connect('jizerky.db')
+db = sqlite3.connect('data/jizerky.db')
 db.execute('PRAGMA foreign_keys = ON')
 db.execute('UPDATE objekt SET podsektor_id = NULL WHERE podsektor_id IN '
            '(SELECT id FROM podsektor WHERE vrchol_lat IS NOT NULL)')

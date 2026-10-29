@@ -12,9 +12,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install numpy
-      - run: python3 nacti.py && python3 doplnky.py && python3 podsektory.py && python3 trasy.py && python3 export.py
+      - run: python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py
       - run: |
           git config user.name github-actions
           git config user.email github-actions@users.noreply.github.com
-          git add jizerky.db data.json
+          git add data/jizerky.db data.json
           git diff --cached --quiet || git commit -m "Aktualizace dat z ČHS" && git push

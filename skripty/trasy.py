@@ -29,7 +29,7 @@ def vysky(body):
         time.sleep(1.1)
     return v
 
-db = sqlite3.connect('jizerky.db')
+db = sqlite3.connect('data/jizerky.db')
 for col in ('pesky_km REAL', 'stoupani_m INTEGER', 'klesani_m INTEGER', 'cil_lat REAL', 'cil_lon REAL'):
     try: db.execute(f'ALTER TABLE sektor ADD COLUMN {col}')
     except sqlite3.OperationalError: pass  # sloupec už existuje

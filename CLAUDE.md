@@ -5,19 +5,20 @@ Statický web (GitHub Pages) s přehledem lezeckých objektů oblasti Jizerské 
 Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Princip: KISS.
 
 ## Soubory
+Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, skripty v `skripty/` (spouštět z kořene).
 - `schema.sql` – SQLite schéma (česky): sektor, podsektor, klasifikace, objekt, cesta, pohled prehled
 - `jizerky.db` – databáze, zdroj pravdy (commitovat)
 - `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
-  tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `dem_cache.json` (necommitovat)
+  tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
 - `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
 Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workflow (`.github/workflows/aktualizace.yml`), nebo lokálně
-`python3 nacti.py && python3 doplnky.py && python3 podsektory.py && python3 trasy.py && python3 export.py`
+`python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py`
 
 ## Pravidla bodování (potvrzeno uživatelem)
 - Body objektu = body sektoru + body nejlehčí cesty.

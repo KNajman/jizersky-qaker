@@ -50,12 +50,12 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
           17705: ODL, 17706: ODL, 17303: ODL,  # Abigor, Vorbachův kámen, Punťa
           17412: ODL,                          # Podsvinče
           8108: ROZ, 282: ROZ}                 # Fojt, Jezdec
-db = sqlite3.connect('jizerky.db')
+db = sqlite3.connect('data/jizerky.db')
 try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES podsektor(id)')
 except sqlite3.OperationalError: pass  # sloupec už existuje
 try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0')
 except sqlite3.OperationalError: pass  # sloupec už existuje
-db.executescript(open('schema.sql', encoding='utf-8').read())
+db.executescript(open('data/schema.sql', encoding='utf-8').read())
 db.execute('PRAGMA foreign_keys = ON')
 for oid, sid, n, lat, lon in OBJEKTY:
     db.execute('INSERT OR REPLACE INTO objekt(id,sektor_id,nazev,typ,lat,lon) VALUES (?,?,?,?,?,?)',

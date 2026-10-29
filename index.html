@@ -9,7 +9,7 @@
 /* paleta Jizerek: smrkový les, mech, žula, rašeliniště, borůvka */
 :root{--les:#23392c;--mech:#6f8a4a;--zula:#ece9e1;--raselina:#7a5a3c;--boruvka:#4d3d6e;
  --bs-body-bg:var(--zula);--bs-body-color:#1f2a22;--bs-link-color-rgb:35,57,44;--bs-link-hover-color-rgb:77,61,110}
-body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;background:var(--zula) url(vrstevnice.svg) center top/cover fixed}
+body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;background:var(--zula) url(obrazky/vrstevnice.svg) center top/cover fixed}
 .navbar{background:var(--les)}
 .navbar-brand,h1,h2,h3,h4,h5,.card-header{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em}
 .card{background:rgba(255,255,255,.88);backdrop-filter:blur(2px);border-color:rgba(35,57,44,.15)}
@@ -98,7 +98,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
    rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
    <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
-   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
+   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}
  list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();

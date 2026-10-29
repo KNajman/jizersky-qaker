@@ -39,10 +39,10 @@ def objekt(oid):
                        r'<span class="info-roads">,\s*([^<]*)</span>', s)
     return oid, (float(m[1]), float(m[2])) if m else (None, None), cesty
 
-db = sqlite3.connect("jizerky.db")
+db = sqlite3.connect("data/jizerky.db")
 try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0')
 except sqlite3.OperationalError: pass  # sloupec už existuje
-db.executescript(open("schema.sql").read())
+db.executescript(open("data/schema.sql", encoding="utf-8").read())
 # klasifikace: I–VI = 1–6, od VI každé písmeno +1 bod
 # (VI 6, VIb 7, VIc 8, VII/VIIa 9, VIIb 10, VIIc 11, VIII/VIIIa 12 …)
 # přeskok N = 2N bodů; led se nehodnotí (stupen NULL)

@@ -3,17 +3,21 @@
 Statický web: tabulka objektů oblasti Jizerské hory (ČHS) po sektorech,
 nejlehčí cesta, body a mapa.
 
-## Soubory
-- `schema.sql` – struktura DB (sektor, klasifikace, objekt, cesta, pohled prehled)
-- `jizerky.db` – SQLite databáze, zdroj pravdy
-- `nacti.py` – stáhne/aktualizuje data z ČHS do DB (opakovatelně, podle ID z ČHS)
-- `trasy.py` – pěší vzdálenost a převýšení z Hausmanky k sektorům (OSRM + EU-DEM), body neovlivňuje
-- `export.py` – z DB vytvoří `data.json` pro web (bez lomů)
-- `index.html` – web
+## Struktura
+- `index.html`, `data.json` – web (GitHub Pages z kořene), `obrazky/` – pozadí s vrstevnicemi, logo Mapy.cz
+- `data/` – `jizerky.db` (SQLite, zdroj pravdy), `schema.sql`; cache výšek `dem_cache.json` se necommituje
+- `skripty/` – Python, spouští se z kořene repozitáře:
+  - `nacti.py` – stáhne/aktualizuje data z ČHS (podle ID z ČHS)
+  - `doplnky.py` – věže přidané pořadatelem, opravy GPS, přesuny mezi sektory
+  - `podsektory.py` – podsektory podle terénu (numpy)
+  - `trasy.py` – pěší vzdálenost a převýšení z Hausmanky, body neovlivňuje
+  - `export.py` – DB -> `data.json` (filtr lomů, masivů…)
+  - `vrstevnice.py` – jednorázově vygeneruje `obrazky/vrstevnice.svg` (numpy, matplotlib)
 
 ## Aktualizace
-    python3 nacti.py && python3 trasy.py && python3 export.py
-    git commit -am "aktualizace dat" && git push
+Ručně: GitHub Actions → Aktualizace dat → Run workflow, nebo lokálně:
+
+    python3 skripty/nacti.py && python3 skripty/doplnky.py && python3 skripty/podsektory.py && python3 skripty/trasy.py && python3 skripty/export.py
 
 Body sektorů jsou fixní, zadávají se ručně:
     UPDATE sektor SET body = 4 WHERE nazev = 'Rudolfov';
