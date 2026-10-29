@@ -3,8 +3,7 @@ bez zákazu lezení v ČHS; výjimky ZOBRAZIT (vždy) a VYRADIT (nikdy).
 Ze zápisu klasifikace se pro web vynechávají metry a RP."""
 import re, sqlite3, json
 ZOBRAZIT = {'Černá věž', 'Hromová věž', 'Koráb', 'Zlomený kámen', 'Plotnová věž',
-            'Hranatá skála', 'Nos', 'Utečenec',  # masivy na skalnioblasti.cz, ale v kamarádově seznamu
-            'Loučeňské cimbuří'}  # v ČHS „- M“, dle pořadatele zobrazit (20,4 km pěšky)
+            'Hranatá skála', 'Nos', 'Utečenec'}  # masivy na skalnioblasti.cz, ale v kamarádově seznamu
 VYRADIT = {8387, 8415,  # Kočičí kámen (vedou na něj schody), Podsvětí (masiv)
            274, 8403, 9088, 9074,  # Gumáček, Kohoutí hřeben, Paličník, Bivak
            15801, 17168, 18483, 16486, 16253, 17245, 19279, 19280, 16947, 16252, 12448,
