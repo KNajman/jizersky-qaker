@@ -26,7 +26,7 @@ db.execute("UPDATE objekt SET druh='masiv' WHERE druh IS NULL AND masiv=1")  # �
 db.execute("UPDATE objekt SET druh='lom' WHERE typ='lom' OR nazev LIKE 'Lom %'")
 for vzor, d in (('%věž%', 'věž'), ('%kámen%', 'kámen'), ('%masiv%', 'masiv')):  # zbylé bez shody podle názvu
     db.execute("UPDATE objekt SET druh=? WHERE druh IS NULL AND nazev LIKE ?", (d, vzor))
-RUCNE = {16979: 'kámen', 8345: 'kámen', 17722: 'kámen', 17718: 'kámen'}  # Tank B, Vodopádový solitér, Tlustoprd, Skalní hřib
+RUCNE = {16979: 'kámen', 8345: 'masiv', 17722: 'kámen', 17718: 'kámen'}  # Tank B, Vodopádový solitér, Tlustoprd, Skalní hřib
 db.executemany('UPDATE objekt SET druh=? WHERE id=?', [(d, i) for i, d in RUCNE.items()])
 db.commit()
 print(db.execute('SELECT druh, count(*) FROM objekt GROUP BY druh').fetchall())
