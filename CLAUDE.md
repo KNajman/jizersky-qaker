@@ -41,7 +41,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 ## Známé mezery
 - Objekty bez GPS se na webu ukazují jen v seznamu (doplnit případně z lezec.cz / skalnioblasti.cz).
 - Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
-- Propozice závodu: sekce nad mapou, chybějící údaje označeny „doplní pořadatel“.
+- Propozice závodu: sekce nad mapou v index.html (termín 30.–31. 10. 2026, kategorie, doložení výstupu);
+  chybí jen přihlášky/startovné („doplní pořadatel“).
 
 ## Styl
 Bootstrap 5, paleta Jizerek (smrk #23392c, mech #6f8a4a, žula #ece9e1, borůvka #4d3d6e), pozadí vrstevnice,
