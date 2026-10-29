@@ -16,11 +16,12 @@ body{background:var(--zula) url(vrstevnice.svg) center top/cover fixed}
 .table{--bs-table-bg:transparent;--bs-table-hover-bg:rgba(111,138,74,.12)}
 .badge-body{background:var(--boruvka)}
 #map{height:62vh;border-radius:.375rem}
+.ico{display:inline-block;margin-right:.5rem;color:var(--les);vertical-align:middle}.ico:hover{color:var(--boruvka)}
 .start{display:flex;align-items:center;justify-content:center;background:var(--raselina);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 </style></head><body>
 <nav class="navbar navbar-dark mb-3"><div class="container"><span class="navbar-brand">Jizerský Qaker <span class="fw-light opacity-75">– věže</span></span>
 <span class="navbar-text small">pá 30. 10. 20:00 – so 31. 10. 18:00 · Hausmanka u Kozy</span></div></nav>
-<main class="container-fluid px-3 px-lg-4 pb-5" style="max-width:1900px">
+<main class="container-fluid px-3 px-md-4 px-xl-5 pb-5" style="max-width:1500px">
 <div class="card mb-3"><div class="card-body small text-body-secondary">
 Zdroj: databáze skal ČHS, oblast Jizerské hory. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru; sektory jsou na mapě barevné plochy.
 <b>Body = body za sektor + body za stupeň nejlehčí cesty.</b> Body za sektor jsou fixní dle pořadatele, „?“ = zatím neurčeny.
@@ -45,7 +46,7 @@ Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
 <div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
 <div class="col-sm-5"><select id="sec" class="form-select"><option value="">všechny sektory</option></select></div>
 <div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary"></span></div></div></div>
-<div id="list" class="row g-3"></div>
+<div id="list" class="row g-3 g-xl-4"></div>
 </main>
 <script>
 const HAUSMANKA=[50.8638,15.1046];
@@ -89,15 +90,15 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
    const rows=D.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));
    if(!rows.length)continue;n+=rows.length;
    const b=rows[0].body_sektor,f=rows[0];
-   h+=`<div class="col-12 col-md-6 col-xxl-4"><div class="card sektor h-100" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
+   h+=`<div class="col-12 col-md-6"><div class="card sektor h-100" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
    <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
    rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
    <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
-   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
+   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="18" height="18"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="mapy.png" width="18" height="18" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}
- list.onclick=e=>{const z=e.target.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
+ list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();
 });
 </script></body></html>
