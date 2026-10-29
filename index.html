@@ -12,7 +12,7 @@ table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--li
 td.n,th.n{text-align:right}a{color:inherit}.m{color:var(--mute)}input,select{font:inherit;padding:3px;margin:0 6px 6px 0}
 </style></head><body>
 <h1>Jizerský Qaker – věže</h1>
-<p class="m">Zdroj: databáze skal ČHS, oblast Jizerské hory. Start: Hausmanka, Oldřichovské sedlo. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru (na mapě modrý špendlík). Body za sektor jsou fixní dle pořadatele.
+<p class="m">Zdroj: databáze skal ČHS, oblast Jizerské hory. Start: Hausmanka, Oldřichovské sedlo. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru (sektory jsou na mapě barevné plochy). Body za sektor jsou fixní dle pořadatele.
 Body = body za sektor + body za stupeň nejlehčí cesty. „?“ = body sektoru zatím neurčeny.
 Před lezením ověř aktuální zákazy na horosvaz.cz.</p>
 <div id="map"></div>
@@ -33,7 +33,7 @@ function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal 
  return h(P).concat(h(P.reverse()));}
 fetch('data.json').then(r=>r.json()).then(D=>{
  const secs=[...new Set(D.map(r=>r.sektor))];
- const barva=S=>`hsl(${secs.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
+ const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${secs.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
  const med=a=>a.sort((x,y)=>x-y)[a.length>>1];
  for(const S of secs){if(S==='Odlehlé skály')continue;  // rozeseté po celých horách, jen body
   let rows=D.filter(r=>r.sektor===S&&r.lat!=null),f=rows[0];if(!f)continue;

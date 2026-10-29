@@ -33,7 +33,8 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 
 ## Mapa
 - Sektor = konvexní obal jeho objektů (+~80 m) s vlastní barvou, objekty mají barvu sektoru.
-  Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají.
+  Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají, body jsou černé.
+- Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
 
 ## Známé mezery
 - 44 objektů bez GPS, ~51 bez hodnotitelné cesty (doplnit případně z lezec.cz / skalnioblasti.cz).

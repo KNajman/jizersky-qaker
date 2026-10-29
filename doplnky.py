@@ -2,7 +2,8 @@
 Objekty a cesty mimo ČHS mají záporné ID, nacti.py je tedy nepřepíše. Opakovatelné."""
 import sqlite3
 
-ROZ, STR, STO = 621, 44, 39  # Rudolfov, Stržový vrch a Kopřivník, Malý a Velký Štolpich
+ROZ, STR, SVA = 621, 44, 1242  # Rudolfov, Stržový vrch a Kopřivník, Svah pod Aplitovými skalami
+VRE, SRA, ODL = 1260, 43, 40  # Vřesoviště, Srázy a Poledník, Odlehlé skály
 # id, sektor, název, lat, lon
 OBJEKTY = [
     (-1, ROZ, 'Malý Strážce', 50.8173003, 15.1181425),
@@ -11,7 +12,7 @@ OBJEKTY = [
     (-4, STR, 'Kuláč', 50.8735711, 15.0951506),
     (-5, STR, 'Teribl', 50.8701594, 15.0774172),
     (-6, STR, 'Kančí zub', 50.8718333, 15.0829167),
-    (-7, STO, 'Jožin z bážin', 50.8593039, 15.1984108),
+    (-7, SVA, 'Jožin z bážin', 50.8593039, 15.1984108),
 ]
 GPS = {  # objekty v ČHS bez GPS
     12620: (50.8027214, 15.1069553),  # K2 (Čchokori)
@@ -40,6 +41,11 @@ CESTY = {
     14220: [('Plameny pekelné', 'VI')],  # Ďáblík: chybí v ČHS
     17513: [('Normální cesta', 'II')],   # Sklínková věž: chybí v ČHS
 }
+# objekty, které jsou v ČHS historicky v jiném sektoru (dle pořadatele); nacti.py sektor přepisuje
+SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE,  # Klobouky, Bezinka, Pól
+          8388: SRA, 12330: STR,               # František, Stínová věž
+          17528: ODL, 17722: ODL, 17457: ODL,  # Filipovka, Tlustoprd, Pánská jízda
+          8108: ROZ, 282: ROZ}                 # Fojt, Jezdec
 
 db = sqlite3.connect('jizerky.db')
 db.execute('PRAGMA foreign_keys = ON')
@@ -48,6 +54,8 @@ for oid, sid, n, lat, lon in OBJEKTY:
                (oid, sid, n, 'skála', lat, lon))
 for oid, (lat, lon) in GPS.items():
     db.execute('UPDATE objekt SET lat=?, lon=? WHERE id=? AND lat IS NULL', (lat, lon, oid))
+for oid, sid in SEKTOR.items():
+    db.execute('UPDATE objekt SET sektor_id=? WHERE id=?', (sid, oid))
 db.execute('DELETE FROM cesta WHERE id < 0')
 cid = 0
 for oid, cesty in CESTY.items():
