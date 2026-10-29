@@ -57,7 +57,7 @@ Tisk (tlačítko Tisk / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, p
 - Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).
 - Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
 - Propozice závodu: sekce nad mapou v index.html (termín 30.–31. 10. 2026, kategorie, doložení výstupu);
-  chybí jen přihlášky/startovné („doplní pořadatel“).
+  program (18:00 prezence, losování 50 věží), startovné 300 Kč/tým, přespání u Kozy, útrata.
 
 ## Styl
 Bootstrap 5, paleta Jizerek (smrk #23392c, mech #6f8a4a, žula #ece9e1, borůvka #4d3d6e), pozadí vrstevnice,
