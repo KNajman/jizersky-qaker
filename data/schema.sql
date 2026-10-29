@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS objekt (
   podsektor_id INTEGER REFERENCES podsektor(id),
   masiv     INTEGER NOT NULL DEFAULT 0,       -- 1 = v ČHS označen „- M“
   zakaz     INTEGER NOT NULL DEFAULT 0,       -- 1 = v ČHS ikona „Zákaz lezení“
-  druh      TEXT CHECK (druh IN ('věž','kámen','masiv')), -- dle skalnioblasti.cz (bez značky / - K, - B / - M)
+  druh      TEXT CHECK (druh IN ('věž','kámen','masiv','lom')), -- skalnioblasti.cz (bez značky / - K, - B / - M), lom dle typu
   so_id     INTEGER,                          -- ID skály na skalnioblasti.cz
   kniha     INTEGER,                          -- vrcholová kniha: 1 ano, 0 ne, NULL nevíme
   slanak    INTEGER,                          -- slaňovací kruh: 1 ano, 0 ne, NULL nevíme

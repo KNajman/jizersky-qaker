@@ -1,4 +1,4 @@
-"""Druh objektu (věž / kámen / masiv) ze seznamu skal na skalnioblasti.cz uloženého v data/zdroje/
+"""Druh objektu (věž / kámen / masiv / lom) ze seznamu skal na skalnioblasti.cz uloženého v data/zdroje/
 (bez značky = věž, „- K“ a „- B“ = kámen, „- M“ = masiv). Páruje se podle názvu v rámci oblasti;
 nespárované vypíše. Stránka má ochranu proti robotům, seznam se proto ukládá ručně z prohlížeče."""
 import html, re, sqlite3, unicodedata
@@ -23,6 +23,9 @@ for oid, n in db.execute('SELECT id, nazev FROM objekt').fetchall():
     else: nic.append(n)
 db.execute("UPDATE objekt SET druh='kámen' WHERE typ='boulder'")  # boulder = kámen (dle pořadatele)
 db.execute("UPDATE objekt SET druh='masiv' WHERE druh IS NULL AND masiv=1")  # „- M“ v ČHS
+db.execute("UPDATE objekt SET druh='lom' WHERE typ='lom' OR nazev LIKE 'Lom %'")
+for vzor, d in (('%věž%', 'věž'), ('%kámen%', 'kámen'), ('%masiv%', 'masiv')):  # zbylé bez shody podle názvu
+    db.execute("UPDATE objekt SET druh=? WHERE druh IS NULL AND nazev LIKE ?", (d, vzor))
 db.commit()
 print(db.execute('SELECT druh, count(*) FROM objekt GROUP BY druh').fetchall())
 print(len(nic), 'bez shody:', ', '.join(sorted(nic)))
