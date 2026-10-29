@@ -35,7 +35,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Druh objektu (`objekt.druh`: věž/kámen/masiv/lom) určuje `druhy.py`: skalnioblasti.cz (bez značky věž, - K/- B kámen, - M masiv),
   boulder = kámen; pak pravidla pořadatele: „- M“ v ČHS (kromě věží) a stěna/plotna/předskalí/masiv v názvu = masiv, lom = lom; RUCNE.
 - Web (dotaz v `export.py`) ukazuje jen druh věž a kámen s GPS a cestami, bez zákazu lezení v ČHS (`objekt.zakaz`).
-  Výjimky: ZOBRAZIT (vždy, např. Černá věž, Koráb, Nos) a VYRADIT (nikdy; Loučeňské cimbuří, ruční skrytí, Odlehlé skály dál než 22 km).
+  Výjimky: ZOBRAZIT (vždy, např. Černá věž, Koráb, Nos) a VYRADIT (nikdy; ruční skrytí, objekty dál než 22 km pěšky vč. Loučeňského cimbuří).
   Ze zápisu klasifikace export vynechává metry a RP. Typ (skála/boulder/lom) z názvu, ruční oprava se nepřepisuje.
 
 ## Vzdálenosti
