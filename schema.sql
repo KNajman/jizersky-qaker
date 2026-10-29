@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS objekt (
   typ       TEXT NOT NULL DEFAULT 'skála' CHECK (typ IN ('skála','boulder','lom')),
   lat REAL, lon REAL,
   podsektor_id INTEGER REFERENCES podsektor(id),
+  masiv     INTEGER NOT NULL DEFAULT 0,       -- 1 = v ČHS označen „- M“
   CHECK ((lat IS NULL) = (lon IS NULL))
 );
 
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS cesta (
 -- nejlehčí cesta a body se počítají, neukládají
 DROP VIEW IF EXISTS prehled;
 CREATE VIEW prehled AS
-SELECT o.id, o.nazev AS objekt, o.typ, s.nazev AS sektor, p.nazev AS podsektor, s.body AS body_sektor,
+SELECT o.id, o.nazev AS objekt, o.typ, o.masiv, s.nazev AS sektor, p.nazev AS podsektor, s.body AS body_sektor,
        s.pesky_km, s.stoupani_m, s.klesani_m, s.cil_lat, s.cil_lon,
        o.lat, o.lon, c.nazev AS cesta, c.zapis, k.body AS body_cesta,
        s.body + k.body AS body,

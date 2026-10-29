@@ -1,8 +1,13 @@
-"""jizerky.db -> data.json pro web (bez lomů, masivů, Loučeňského cimbuří a objektů bez cest – dle pořadatele;
-bez cest jsou i duplicitní prázdné záznamy ČHS, např. Čapí věž, Hanýsek)."""
-import sqlite3, json
+"""jizerky.db -> data.json pro web. Pravidla pořadatele: nezobrazují se lomy, masivy („- M“ v ČHS),
+objekty s lom/stěna/masiv v názvu, Loučeňské cimbuří a objekty bez cest (i duplicitní prázdné záznamy ČHS,
+např. Čapí věž, Hanýsek). Věže a ZOBRAZIT se zobrazují vždy."""
+import re, sqlite3, json
+ZOBRAZIT = {'Černá věž', 'Hromová věž', 'Koráb', 'Zlomený kámen'}
+VEN = re.compile(r'lom|stěn|masiv|masív', re.I)
 db = sqlite3.connect("jizerky.db"); db.row_factory = sqlite3.Row
 rows = [dict(r) for r in db.execute(
-    "SELECT * FROM prehled WHERE typ != 'lom' AND objekt NOT LIKE '%masiv%' AND id != 18455 AND pocet_cest > 0 ORDER BY sektor, objekt COLLATE NOCASE")]
+    "SELECT * FROM prehled WHERE id != 18455 AND pocet_cest > 0 ORDER BY sektor, objekt COLLATE NOCASE")]
+rows = [r for r in rows if 'věž' in r['objekt'].lower() or r['objekt'] in ZOBRAZIT
+        or not (r['masiv'] or r['typ'] == 'lom' or VEN.search(r['objekt']))]
 json.dump(rows, open("data.json", "w"), ensure_ascii=False)
 print(len(rows), "objektů -> data.json")

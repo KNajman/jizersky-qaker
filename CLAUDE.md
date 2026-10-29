@@ -29,7 +29,9 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
-- Lomy, masivy, Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS) se na webu nezobrazují (filtr v `export.py`), bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
+- Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“ v názvu,
+  Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
+  (Černá věž, Hromová věž, Koráb, Zlomený kámen). Bouldery ano. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
 - Jen informativní, body neovlivňují. Měří se tam (ne zpět) k objektu nejblíž těžišti sektoru,

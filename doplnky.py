@@ -51,6 +51,8 @@ SEKTOR = {17714: VRE, 17435: VRE, 17434: VRE, 9047: VRE,  # Klobouky, Bezinka, P
 db = sqlite3.connect('jizerky.db')
 try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES podsektor(id)')
 except sqlite3.OperationalError: pass  # sloupec už existuje
+try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0')
+except sqlite3.OperationalError: pass  # sloupec už existuje
 db.executescript(open('schema.sql', encoding='utf-8').read())
 db.execute('PRAGMA foreign_keys = ON')
 for oid, sid, n, lat, lon in OBJEKTY:

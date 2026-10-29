@@ -40,6 +40,8 @@ def objekt(oid):
     return oid, (float(m[1]), float(m[2])) if m else (None, None), cesty
 
 db = sqlite3.connect("jizerky.db")
+try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0')
+except sqlite3.OperationalError: pass  # sloupec už existuje
 db.executescript(open("schema.sql").read())
 # klasifikace: I–VI = 1–6, od VI každé písmeno +1 bod
 # (VI 6, VIb 7, VIc 8, VII/VIIa 9, VIIb 10, VIIc 11, VIII/VIIIa 12 …)
@@ -55,14 +57,14 @@ for n in (1, 2, 3, 4, 5):
 sektory = re.findall(r'href="https://www\.horosvaz\.cz/skaly-sektor-(\d+)/" title="([^"]*)"\), ', get(OBLAST)) \
        or re.findall(r'<a href="/skaly-sektor-(\d+)/" title="([^"]*)"', get(OBLAST))
 sektory = list(dict.fromkeys(sektory))
-objekty = []
+objekty, masivy = [], set()
 for sid, nazev in sektory:
     db.execute("INSERT INTO sektor(id,nazev) VALUES (?,?) "
                "ON CONFLICT(id) DO UPDATE SET nazev=excluded.nazev",  # body plní trasy.py
                (int(sid), nazev))
     for oid, on in dict.fromkeys(re.findall(r'skaly-skala-(\d+)/" title="([^"]*)"', get(f"/skaly-sektor-{sid}/"))):
-        if not on.endswith(' - M'):
-            objekty.append((int(oid), int(sid), on))
+        if on.endswith(' - M'): masivy.add(int(oid))  # výpis s počty cest uvádí masivy s „- M“
+        else: objekty.append((int(oid), int(sid), on))
 objekty = list({o[0]: o for o in objekty}.values())
 
 with cf.ThreadPoolExecutor(4) as ex:
@@ -77,6 +79,7 @@ for oid, sid, on in objekty:
     for cid, cn, z in cesty:
         z = z.replace('\xa0', ' ').strip()
         db.execute("INSERT OR REPLACE INTO cesta VALUES (?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z)))
+db.execute("UPDATE objekt SET masiv = (id IN (%s))" % ",".join(map(str, masivy or [0])))
 db.commit()
 print(db.execute("SELECT (SELECT count(*) FROM sektor),(SELECT count(*) FROM objekt),"
                  "(SELECT count(*) FROM cesta),(SELECT count(*) FROM cesta WHERE stupen IS NULL)").fetchone(),
