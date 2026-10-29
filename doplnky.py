@@ -13,7 +13,16 @@ OBJEKTY = [
     (-6, STR, 'Kančí zub', 50.8718333, 15.0829167),
     (-7, STO, 'Jožin z bážin', 50.8593039, 15.1984108),
 ]
-GPS = {12620: (50.8027214, 15.1069553)}  # K2 (Čchokori) v ČHS bez GPS
+GPS = {  # objekty v ČHS bez GPS
+    12620: (50.8027214, 15.1069553),  # K2 (Čchokori)
+    17437: (50.8701708, 15.0985275),  # Kotel
+    14219: (50.8637872, 15.0891208),  # Předskalí pyramidy
+    17303: (50.8755892, 15.1023303),  # Punťa
+    17718: (50.8697072, 15.0916769),  # Skalní hřib
+    18268: (50.8609567, 15.0812381),  # Stěna zpívajícího stromu
+    16485: (50.8593989, 15.0757769),  # The Zeď
+    16488: (50.8669242, 15.0757742),  # Žezlo
+}
 CESTY = {
     -1: [('Cesta zapadajícího slunce', 'V'), ('Smrčková cesta', 'IV'), ('Jitřní červánky', 'VIb')],
     -2: [('Sloní ucho', 'II'), ('Horská túra', 'III'), ('Mirkova cesta', 'IV'), ('Balkónová zápletka', 'III'),
