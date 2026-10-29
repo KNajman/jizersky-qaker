@@ -21,6 +21,7 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 .start{display:flex;align-items:center;justify-content:center;background:var(--raselina);border:2px solid #fff;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 .hospoda{background:var(--boruvka)}
 .objekt{font-weight:700}
+.slanak{display:inline-block;width:.8em;height:.8em;border:2px solid var(--les);border-radius:50%}
 .sektor{scroll-margin-top:1rem}
 .bs-radek{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin-bottom:.4rem}
 .bs-radek>b{width:2.5rem}
@@ -36,7 +37,7 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 #tisk h3{font-size:6pt;margin:0;padding:.2mm .8mm;break-after:avoid;border-left:2mm solid var(--b);background:#eee}
 #tisk table{width:100%;table-layout:fixed;border-collapse:collapse}
 #tisk td{padding:0 .5mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:.1mm solid #ddd}
-#tisk td:nth-child(1){width:42%;font-weight:700}#tisk td:nth-child(3){width:13%}#tisk td:nth-child(4){width:7%;text-align:right;font-weight:700}
+#tisk td:nth-child(1){width:42%;font-weight:700}#tisk td:nth-child(3){width:13%}#tisk td:nth-child(4){width:4%;text-align:center}#tisk td:nth-child(5){width:7%;text-align:right;font-weight:700}
 @page{size:A4;margin:7mm}
 @media print{#tisk{display:block}}
 </style></head><body>
@@ -114,7 +115,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
   document.getElementById(kotva(a.dataset.s)).scrollIntoView({behavior:'smooth'});};
  tisk.innerHTML=`<h1>Jizerský Qaker – objekty a body (body objektu = sektor + nejlehčí cesta)</h1>`+secs.map(S=>{const rows=D.filter(r=>r.sektor===S);
   return `<section style="--b:${barva(S)}"><h3>${S} – sektor ${rows[0].body_sektor??'?'} b, ${rows.length} obj.</h3><table>`+
-   rows.map(r=>`<tr><td>${r.objekt}</td><td>${r.cesta||'–'}</td><td>${r.zapis||''}</td><td>${pts(r)}</td></tr>`).join('')+'</table></section>';}).join('');
+   rows.map(r=>`<tr><td>${r.objekt}</td><td>${r.cesta||'–'}</td><td>${r.zapis||''}</td><td>${r.slanak?'○':''}</td><td>${pts(r)}</td></tr>`).join('')+'</table></section>';}).join('');
  addEventListener('beforeprint',()=>document.body.classList.add('tisk'));addEventListener('afterprint',()=>document.body.classList.remove('tisk'));
  tiskni.onclick=()=>print();
  function draw(){
@@ -126,9 +127,9 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(D=>{
    h+=`<div class="col-12 col-md-6"><div class="card sektor h-100" id="${kotva(S)}" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
    <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
-   <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
-   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.slanak?' <span class="badge text-bg-light" title="slaňovací kruh">slaňák</span>':''}${r.druh&&r.druh!=='věž'?' <span class="badge text-bg-light">'+r.druh+'</span>':''}${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
-   <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
+   <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-center" title="slaňovací kruh">Slaň.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
+   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
+   <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-center">${r.slanak?'<span class="slanak" title="slaňovací kruh"></span>':''}</td><td class="text-end fw-semibold">${pts(r)}</td>
    <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}
  list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
