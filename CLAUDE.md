@@ -33,7 +33,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
 - Na webu se nezobrazují (filtr v `export.py`): masivy („- M“ v ČHS, `objekt.masiv`), lomy, objekty s „lom“/„stěna“/„masiv“/„plotna“/„předskalí“ v názvu (plotna i u věží),
-  Loučeňské cimbuří (příliš daleko) a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
+  Loučeňské cimbuří (příliš daleko), objekty bez GPS a objekty bez cest (vč. duplicit ČHS). Vždy se zobrazují věže a výjimky ZOBRAZIT
   (Černá věž, Hromová věž, Koráb, Zlomený kámen, Plotnová věž). Ručně vyřazené objekty: VYRADIT v `export.py` (vč. Odlehlých skal dál než 22 km pěšky). Bouldery ano. Ze zápisu klasifikace export vynechává metry a RP. Typ objektu (skála/boulder/lom) určen z názvu, ruční oprava se při novém načtení nepřepisuje.
 
 ## Vzdálenosti
@@ -49,7 +49,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
 
 ## Známé mezery
-- Objekty bez GPS se na webu ukazují jen v seznamu (doplnit případně z lezec.cz / skalnioblasti.cz).
+- Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).
 - Zákazy lezení (NPR Jizerskohorské bučiny) nejsou v datech zachyceny.
 - Propozice závodu: sekce nad mapou v index.html (termín 30.–31. 10. 2026, kategorie, doložení výstupu);
   chybí jen přihlášky/startovné („doplní pořadatel“).

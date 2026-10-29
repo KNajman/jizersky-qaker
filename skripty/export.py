@@ -1,5 +1,5 @@
 """jizerky.db -> data.json pro web. Pravidla pořadatele: nezobrazují se lomy, masivy („- M“ v ČHS),
-objekty s lom/stěna/masiv/plotna/předskalí v názvu, Loučeňské cimbuří a objekty bez cest (i duplicitní prázdné záznamy ČHS,
+objekty s lom/stěna/masiv/plotna/předskalí v názvu, Loučeňské cimbuří a objekty bez GPS a bez cest (i duplicitní prázdné záznamy ČHS,
 např. Čapí věž, Hanýsek). Věže se zobrazují vždy (kromě ploten), ZOBRAZIT vždy.
 Ze zápisu klasifikace se pro web vynechávají metry a RP."""
 import re, sqlite3, json
@@ -17,7 +17,7 @@ VYRADIT = {8387, 8415,  # Kočičí kámen (vedou na něj schody), Podsvětí (m
 VEN = re.compile(r'\blom\b|stěn|masiv|masív|předskal', re.I)
 db = sqlite3.connect("data/jizerky.db"); db.row_factory = sqlite3.Row
 rows = [dict(r) for r in db.execute(
-    "SELECT * FROM prehled WHERE id != 18455 AND id NOT IN (%s) AND pocet_cest > 0 ORDER BY sektor, objekt COLLATE NOCASE" % ",".join(map(str, VYRADIT)))]
+    "SELECT * FROM prehled WHERE id != 18455 AND lat IS NOT NULL AND id NOT IN (%s) AND pocet_cest > 0 ORDER BY sektor, objekt COLLATE NOCASE" % ",".join(map(str, VYRADIT)))]
 rows = [r for r in rows if r['objekt'] in ZOBRAZIT or 'plotn' not in r['objekt'].lower() and ('věž' in r['objekt'].lower()
         or not (r['masiv'] or r['typ'] == 'lom' or VEN.search(r['objekt'])))]
 
