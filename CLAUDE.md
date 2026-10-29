@@ -11,7 +11,8 @@ Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Pr
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
 - `export.py` – DB -> `data.json` (bez lomů)
-- `index.html` – web, Leaflet z cdnjs + OSM dlaždice, načítá data.json
+- `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
+- `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)
 
 Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && python3 export.py`
 
@@ -42,4 +43,5 @@ Aktualizace: `python3 nacti.py && python3 doplnky.py && python3 trasy.py && pyth
 - Propozice závodu zatím nedostupné.
 
 ## Styl
-Jednoduché markdown-like stylování, bez barev a dekorací (výjimka: barvy sektorů na mapě). Komunikace česky, věcně, kritika vítána.
+Bootstrap 5, paleta Jizerek (smrk #23392c, mech #6f8a4a, žula #ece9e1, borůvka #4d3d6e), pozadí vrstevnice,
+start na mapě = koza 🐐. Sektory mají na mapě vlastní barvy. Komunikace česky, věcně, kritika vítána.

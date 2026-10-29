@@ -1,24 +1,37 @@
-<!doctype html><html lang="cs"><head><meta charset="utf-8">
+<!doctype html><html lang="cs" data-bs-theme="light"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jizerský Qaker – podklady</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
-:root{--fg:#111;--bg:#fff;--line:#ccc;--mute:#666}
-@media (prefers-color-scheme:dark){:root{--fg:#eee;--bg:#111;--line:#444;--mute:#999}}
-body{font:15px/1.5 system-ui,sans-serif;color:var(--fg);background:var(--bg);max-width:1000px;margin:0 auto;padding:1rem}
-#map{height:60vh;border:1px solid var(--line)}
-table{border-collapse:collapse;width:100%}td,th{border-bottom:1px solid var(--line);padding:3px 6px;text-align:left;vertical-align:top}
-td.n,th.n{text-align:right}a{color:inherit}.m{color:var(--mute)}input,select{font:inherit;padding:3px;margin:0 6px 6px 0}
+/* paleta Jizerek: smrkový les, mech, žula, rašeliniště, borůvka */
+:root{--les:#23392c;--mech:#6f8a4a;--zula:#ece9e1;--raselina:#7a5a3c;--boruvka:#4d3d6e;
+ --bs-body-bg:var(--zula);--bs-body-color:#1f2a22;--bs-link-color-rgb:35,57,44;--bs-link-hover-color-rgb:77,61,110}
+body{background:var(--zula) url(vrstevnice.svg) center top/cover fixed}
+.navbar{background:var(--les)}
+.navbar-brand{font-weight:600;letter-spacing:.02em}
+.card{background:rgba(255,255,255,.88);backdrop-filter:blur(2px);border-color:rgba(35,57,44,.15)}
+.sektor .card-header{background:rgba(111,138,74,.12);border-left:6px solid var(--b)}
+.table{--bs-table-bg:transparent;--bs-table-hover-bg:rgba(111,138,74,.12)}
+.badge-body{background:var(--boruvka)}
+#map{height:62vh;border-radius:.375rem}
+.koza{font-size:26px;line-height:34px;text-align:center;background:#fff;border:2px solid var(--les);border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.4)}
 </style></head><body>
-<h1>Jizerský Qaker – věže</h1>
-<p class="m">Zdroj: databáze skal ČHS, oblast Jizerské hory. Start: Hausmanka, Oldřichovské sedlo. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru (sektory jsou na mapě barevné plochy). Body za sektor jsou fixní dle pořadatele.
-Body = body za sektor + body za stupeň nejlehčí cesty. „?“ = body sektoru zatím neurčeny.
-Před lezením ověř aktuální zákazy na horosvaz.cz.</p>
-<div id="map"></div>
-<p><input id="q" placeholder="hledat objekt"><select id="sec"><option value="">všechny sektory</option></select>
-<span id="cnt" class="m"></span></p>
+<nav class="navbar navbar-dark mb-3"><div class="container"><span class="navbar-brand">🐐 Jizerský Qaker <span class="fw-light opacity-75">– věže</span></span>
+<span class="navbar-text small">start Hausmanka, Oldřichovské sedlo</span></div></nav>
+<main class="container pb-5">
+<div class="card mb-3"><div class="card-body small text-body-secondary">
+Zdroj: databáze skal ČHS, oblast Jizerské hory. Vzdálenost a převýšení k sektoru jsou orientační (pěší trasa OSM, výšky EU-DEM), měřeno k objektu ve středu sektoru; sektory jsou na mapě barevné plochy.
+<b>Body = body za sektor + body za stupeň nejlehčí cesty.</b> Body za sektor jsou fixní dle pořadatele, „?“ = zatím neurčeny.
+Před lezením ověř aktuální zákazy na horosvaz.cz.</div></div>
+<div class="card mb-3 p-1"><div id="map"></div></div>
+<div class="card mb-3"><div class="card-body row g-2 align-items-center">
+<div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
+<div class="col-sm-5"><select id="sec" class="form-select"><option value="">všechny sektory</option></select></div>
+<div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary"></span></div></div></div>
 <div id="list"></div>
+</main>
 <script>
 const HAUSMANKA=[50.8638,15.1046];
 const chs=r=>r.id>0?`https://www.horosvaz.cz/skaly-skala-${r.id}/`:'https://drive.google.com/file/d/1YAyobnJOr_nRIvBylHTEQNr-Sr4cJUUX/view';
@@ -26,7 +39,7 @@ const mapy=r=>`https://mapy.cz/turisticka?source=coor&id=${r.lon},${r.lat}&x=${r
 const pts=r=>r.body!=null?r.body:(r.body_cesta!=null?'?':'');
 const map=L.map('map').setView([50.86,15.2],11);
 L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
-L.marker(HAUSMANKA).addTo(map).bindPopup('<b>Start</b><br>Hausmanka u Kozy');
+L.marker(HAUSMANKA,{icon:L.divIcon({className:'koza',html:'🐐',iconSize:[38,38]}),zIndexOffset:1000}).addTo(map).bindPopup('<b>Start</b><br>Hausmanka u Kozy');
 const mk={};
 function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal (monotone chain)
  const x=(o,a,b)=>(a[1]-o[1])*(b[0]-o[0])-(a[0]-o[0])*(b[1]-o[1]),h=(Q)=>{const H=[];for(const p of Q){while(H.length>1&&x(H[H.length-2],H[H.length-1],p)<=0)H.pop();H.push(p);}H.pop();return H;};
@@ -52,12 +65,15 @@ fetch('data.json').then(r=>r.json()).then(D=>{
    const rows=D.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));
    if(!rows.length)continue;n+=rows.length;
    const b=rows[0].body_sektor,f=rows[0];
-   h+=`<h2>${S} <span class="m">(${rows.length} obj., sektor ${b??'?'} b${f.pesky_km!=null?`, ${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''})</span></h2><table><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="n">Body</th><th>Mapa</th></tr>`+
-   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class=m>('+r.typ+')</span>':''}</td>
-   <td>${r.cesta||'<span class=m>–</span>'}</td><td>${r.zapis||''}</td><td class="n">${pts(r)}</td>
-   <td>${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class=m>bez GPS</span>'}</td></tr>`).join('')+'</table>';}
+   h+=`<div class="card sektor mb-3" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
+   <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
+   <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
+   <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-end">Body</th><th>Mapa</th></tr></thead><tbody>`+
+   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank">${r.objekt}</a>${r.typ!=='skála'?' <span class="badge text-bg-light">'+r.typ+'</span>':''}</td>
+   <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-end fw-semibold">${pts(r)}</td>
+   <td class="text-nowrap">${r.lat!=null?`<a href="#" data-z="${r.id}">ukázat</a> · <a href="${mapy(r)}" target="_blank">mapy.cz</a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div>';}
   list.innerHTML=h;cnt.textContent=n+' objektů';}
- list.onclick=e=>{const z=e.target.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();scrollTo(0,0);}};
+ list.onclick=e=>{const z=e.target.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();
 });
 </script></body></html>
