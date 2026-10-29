@@ -10,7 +10,7 @@ VYRADIT = {8387, 8415,  # Kočičí kámen (vedou na něj schody), Podsvětí (m
            # ↑ Vrátnej, Náhrobní kámen, Patka, Vodojem, Boží Muka, Bushman, Dračí doupě, Fojtecký drak, Páže, Špičoun (Raketa), Tvrz
            9385, 14221, 10456, 16488,  # Karetní stůl, Podhradí, Palisáda, Žezlo
            10440, 10434, 14232, 10431}  # Saloon, Ruplá, Schody, Regál
-VEN = re.compile(r'\blom\b|stěn|masiv|masív', re.I)
+VEN = re.compile(r'\blom\b|stěn|masiv|masív|předskal', re.I)
 db = sqlite3.connect("data/jizerky.db"); db.row_factory = sqlite3.Row
 rows = [dict(r) for r in db.execute(
     "SELECT * FROM prehled WHERE id != 18455 AND id NOT IN (%s) AND pocet_cest > 0 ORDER BY sektor, objekt COLLATE NOCASE" % ",".join(map(str, VYRADIT)))]
