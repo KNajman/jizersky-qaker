@@ -1,6 +1,7 @@
 """Zvýrazněné pěší cesty z OpenStreetMap (Overpass) -> cesty.json pro web. Spouštět jednorázově, když se změní seznam."""
 import json, urllib.parse, urllib.request
-CESTY = ['Viničná cesta', 'Čínská cesta']
+CESTY = ['Viničná cesta', 'Čínská cesta', 'Štolpišská silnice', 'Pavlova cesta', 'Paličníková cesta', 'Kozí stezka',
+         'Knížecí cesta', 'Nová poutní cesta']
 q = '[out:json][timeout:60];way["highway"]["name"~"^(%s)$"](50.70,14.95,50.95,15.40);out geom;' % '|'.join(CESTY)
 req = urllib.request.Request('https://overpass-api.de/api/interpreter', data=urllib.parse.urlencode({'data': q}).encode(),
                              headers={'User-Agent': 'jizersky-qaker'})
