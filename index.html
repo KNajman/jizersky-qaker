@@ -20,8 +20,9 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 .hledani{border:2px solid var(--les)}.hledani .input-group-text{background:#fff;color:var(--les)}
 .pocet{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--les);color:#fff;border-radius:.5rem;padding:.3rem .5rem;line-height:1.1}
 .pocet b{font-family:'Chakra Petch',sans-serif;font-size:1.8rem}.pocet span{font-size:.85rem;opacity:.8}
+.pod td{background:rgba(111,138,74,.12);font-weight:600;font-size:.9rem}
 .view{display:none}.view.on{display:block}
-#map,#mapaClovek{height:62vh;border-radius:.375rem}
+#map,#mapaClovek,#mapaPruvodce{height:62vh;border-radius:.375rem}
 .navbar-brand,h1,h2,h3,h4,h5,.card-header{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em}
 .card{background:rgba(255,255,255,.88);backdrop-filter:blur(2px);border-color:rgba(35,57,44,.15)}
 .sektor .card-header{background:rgba(111,138,74,.12);border-left:6px solid var(--b)}
@@ -54,7 +55,7 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 <header class="sticky-top mb-3"><nav class="navbar navbar-dark navbar-expand py-1"><div class="container-fluid px-3 px-md-4 px-xl-5" style="max-width:1500px">
 <span class="navbar-brand">Jizerské hory</span>
 <ul class="navbar-nav" id="menu">
-<li class="nav-item"><span class="nav-link disabled" title="připravujeme">Průvodce</span></li>
+<li class="nav-item"><a class="nav-link" href="#pruvodce" data-v="pruvodce">Průvodce</a></li>
 <li class="nav-item"><a class="nav-link" href="#qaker" data-v="qaker">Qaker</a></li>
 <li class="nav-item"><a class="nav-link" href="#cracker" data-v="cracker">Cracker</a></li>
 <li class="nav-item"><a class="nav-link" href="#clovek" data-v="clovek">Člověk</a></li></ul></div></nav>
@@ -91,6 +92,16 @@ Kilometry a převýšení u sektorů jsou orientační pěší trasa z Hausmanky
 <div class="col-md-4"><select id="sec" class="form-select form-select-lg"><option value="">všechny sektory</option></select></div>
 <div class="col-md-2"><div class="pocet"><b id="cnt"></b><span>objektů</span></div></div></div></div>
 <div id="list" class="row g-3 g-xl-4"></div>
+</section>
+<section id="v-pruvodce" class="view">
+<div class="card mb-3"><div class="card-body small text-body-secondary">Všechny objekty oblasti Jizerské hory z databáze ČHS
+a doplňků pořadatele, rozdělené do sektorů a podsektorů. Bez cest a bodů; podrobnosti o objektu na ČHS.</div></div>
+<div class="card mb-3 hledani"><div class="card-body row g-2 g-md-3 align-items-center">
+<div class="col-md-6"><div class="input-group input-group-lg"><span class="input-group-text"><svg viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M11.7 10.3a6.5 6.5 0 1 0-1.4 1.4l3.9 3.9 1.4-1.4zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9"/></svg></span><input id="qp" type="search" class="form-control" placeholder="hledat objekt…"></div></div>
+<div class="col-md-4"><select id="secp" class="form-select form-select-lg"><option value="">všechny sektory</option></select></div>
+<div class="col-md-2"><div class="pocet"><b id="cntp"></b><span>objektů</span></div></div></div></div>
+<div class="card mb-3 p-1"><div id="mapaPruvodce"></div></div>
+<div id="listp" class="row g-3 g-xl-4"></div>
 </section>
 <section id="v-cracker" class="view"><div class="card"><div class="card-header"><h2 class="h5 mb-0">Jizerský Cracker</h2></div>
 <div class="card-body"><p class="mb-0">Chystáme na jaro 2027.</p></div></div></section>
@@ -161,25 +172,27 @@ const kotva=S=>'s-'+S.normalize('NFD').replace(/[^\w]+/g,'-').toLowerCase();
 function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal (monotone chain)
  const x=(o,a,b)=>(a[1]-o[1])*(b[0]-o[0])-(a[0]-o[0])*(b[1]-o[1]),h=(Q)=>{const H=[];for(const p of Q){while(H.length>1&&x(H[H.length-2],H[H.length-1],p)<=0)H.pop();H.push(p);}H.pop();return H;};
  return h(P).concat(h(P.reverse()));}
-fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,objekty:D,clovek:C})=>{
+fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,objekty:D,clovek:C,pruvodce:P})=>{
  const datum=A?new Date(A).toLocaleDateString('cs'):'?';akt.textContent=datum;
  const bs=S=>D.find(r=>r.sektor===S).body_sektor??99;  // seřazeno podle bodů za sektor, pak abecedně
  const secs=[...new Set(D.map(r=>r.sektor))].sort((a,b)=>bs(a)-bs(b)||a.localeCompare(b,'cs'));
- const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${secs.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
+ const vse=[...secs,...new Set(P.map(r=>r.sektor).filter(S=>!secs.includes(S)))];
+ const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${vse.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
  const med=a=>a.sort((x,y)=>x-y)[a.length>>1];
- for(const S of secs){if(S==='Odlehlé skály')continue;  // rozeseté po celých horách, jen body
-  let rows=D.filter(r=>r.sektor===S&&r.lat!=null),f=rows[0];if(!f)continue;
-  const m=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
-  rows=rows.filter(r=>Math.hypot((r.lat-m[0])*111,(r.lon-m[1])*70)<3);  // odlehlé objekty (>3 km) do obalu nepočítat
-  const P=rows.flatMap(r=>kruh(r,.0016,.0026)); // ~180 m kolem objektů
-  L.polygon(obal(P),{color:barva(S),weight:2,fillOpacity:.15}).addTo(map)
-  .bindPopup(`<b>${S}</b><br>sektor ${f.body_sektor??'?'} b${f.pesky_km!=null?`<br>${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''}`);}
- for(const P of new Set(D.filter(r=>r.podsektor).map(r=>r.sektor+'|'+r.podsektor))){const [S,N]=P.split('|');
-  let rows=D.filter(r=>r.sektor===S&&r.podsektor===N&&r.lat!=null);
-  const m=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
-  rows=rows.filter(r=>Math.hypot((r.lat-m[0])*111,(r.lon-m[1])*70)<1.5);  // odlehlé objekty (>1,5 km) do obalu nepočítat
+ function hranice(m,R,popis){  // sektory (plné) a podsektory (čárkované) jako obaly objektů R na mapě m
+ for(const S of new Set(R.map(r=>r.sektor))){if(S==='Odlehlé skály')continue;  // rozeseté po celých horách, jen body
+  let rows=R.filter(r=>r.sektor===S&&r.lat!=null),f=rows[0];if(!f)continue;
+  const c=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
+  rows=rows.filter(r=>Math.hypot((r.lat-c[0])*111,(r.lon-c[1])*70)<3);  // odlehlé objekty (>3 km) do obalu nepočítat
+  const K=rows.flatMap(r=>kruh(r,.0016,.0026)); // ~180 m kolem objektů
+  L.polygon(obal(K),{color:barva(S),weight:2,fillOpacity:.15}).addTo(m).bindPopup(popis(S,f));}
+ for(const SN of new Set(R.filter(r=>r.podsektor).map(r=>r.sektor+'|'+r.podsektor))){const [S,N]=SN.split('|');
+  let rows=R.filter(r=>r.sektor===S&&r.podsektor===N&&r.lat!=null);if(!rows.length)continue;
+  const c=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
+  rows=rows.filter(r=>Math.hypot((r.lat-c[0])*111,(r.lon-c[1])*70)<1.5);  // odlehlé objekty (>1,5 km) do obalu nepočítat
   L.polygon(obal(rows.flatMap(r=>kruh(r,.0013,.0021))),  // ~145 m
-   {color:barva(S),weight:1,dashArray:'4 4',fillOpacity:.1}).addTo(map).bindPopup(`<b>${N}</b><br>${S}`);}
+   {color:barva(S),weight:1,dashArray:'4 4',fillOpacity:.1}).addTo(m).bindPopup(`<b>${N}</b><br>${S}`);}}
+ hranice(map,D,(S,f)=>`<b>${S}</b><br>sektor ${f.body_sektor??'?'} b${f.pesky_km!=null?`<br>${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''}`);
  D.forEach(r=>{if(r.lat==null)return;
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
   .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
@@ -212,7 +225,6 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
    <td class="text-nowrap text-center">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`;}
  list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();
- // Člověk: mapa jen Stržový vrch a Kopřivník, vytvoří se při prvním zobrazení
  // Člověk: celý sektor Stržový vrch a Kopřivník bez filtrů Qakeru; mapa se vytvoří při prvním zobrazení
  const SC='Stržový vrch a Kopřivník',mkc={};let mc;
  function drawC(){const t=qc.value.toLowerCase(),rows=C.filter(r=>r.objekt.toLowerCase().includes(t));cntc.textContent=rows.length;
@@ -229,15 +241,40 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
    .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
   mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])).pad(.1));drawC();};
  drawC();
+ // Průvodce: všechny objekty bez filtrů, po sektorech a podsektorech, bez cest a bodů
+ const secsP=[...new Set(P.map(r=>r.sektor))].sort((a,b)=>a.localeCompare(b,'cs')),mkp={};let mp;
+ secsP.forEach(s=>secp.add(new Option(s,s)));
+ function drawP(){const t=qp.value.toLowerCase(),s=secp.value;let n=0,h='';
+  for(const S of secsP){if(s&&S!==s)continue;
+   const rows=P.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));if(!rows.length)continue;n+=rows.length;
+   let pod;h+=`<div class="col-12 col-md-6"><div class="card sektor h-100" style="--b:${barva(S)}"><div class="card-header d-flex gap-2 align-items-baseline">
+    <h2 class="h5 mb-0">${S}</h2><span class="small text-body-secondary">${rows.length} obj.</span></div>
+    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><tbody>`+
+    rows.map(r=>(r.podsektor!==pod?`<tr class="pod"><td colspan="3">${(pod=r.podsektor)||'bez podsektoru'}</td></tr>`:'')+
+     `<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a></td><td class="small text-body-secondary">${r.druh||''}</td>
+     <td class="text-nowrap text-end">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="small text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+
+    '</tbody></table></div></div></div>';}
+  listp.innerHTML=h;cntp.textContent=n;
+  const vid=new Set(P.filter(r=>(!s||r.sektor===s)&&r.objekt.toLowerCase().includes(t)).map(r=>r.id));
+  for(const id in mkp)mkp[id].setStyle({opacity:vid.has(+id)?1:.15,fillOpacity:vid.has(+id)?.8:.1});}
+ [qp,secp].forEach(el=>el.oninput=drawP);
+ listp.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkp[z]){e.preventDefault();mp.setView(mkp[z].getLatLng(),16);mkp[z].openPopup();mp.getContainer().scrollIntoView({behavior:'smooth'});}};
+ window.ukazMapuP=()=>{if(mp)return mp.invalidateSize();
+  mp=L.map('mapaPruvodce').setView([50.86,15.2],11);vrstva().addTo(mp);koza(mp);poloha(mp);
+  hranice(mp,P,S=>`<b>${S}</b>`);
+  P.forEach(r=>{if(r.lat!=null)mkp[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(mp)
+   .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
+  drawP();};
+ drawP();
  ukaz();
 });
 // záložky: #cracker, #clovek; cokoli jiného (#propozice, #mapa, sektory…) patří ke Qakeru
-function ukaz(){const h=location.hash.slice(1),v=['cracker','clovek'].includes(h)?h:'qaker';
+function ukaz(){const h=location.hash.slice(1),v=['pruvodce','cracker','clovek'].includes(h)?h:'qaker';
  document.querySelectorAll('.view').forEach(e=>e.classList.toggle('on',e.id==='v-'+v));
  document.querySelectorAll('#menu [data-v]').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
  podmenu.style.display=v==='qaker'?'':'none';
  if(v==='qaker'){map.invalidateSize();const e=h&&h!=='qaker'&&document.getElementById(h);if(e)e.scrollIntoView();}else scrollTo(0,0);
- if(v==='clovek'&&window.ukazMapuC)ukazMapuC();}
+ if(v==='clovek'&&window.ukazMapuC)ukazMapuC();if(v==='pruvodce'&&window.ukazMapuP)ukazMapuP();}
 addEventListener('hashchange',ukaz);ukaz();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>

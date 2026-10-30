@@ -24,8 +24,11 @@ def zapis(z):  # „VIc, RP VII, 8m“ -> „VIc“, samotné „RP IV-V“ -> �
 # Jizerský Člověk: celý sektor Stržový vrch a Kopřivník bez filtrů (pravidla Qakeru neplatí)
 clovek = [dict(r) for r in db.execute(
     "SELECT * FROM prehled WHERE sektor = 'Stržový vrch a Kopřivník' ORDER BY objekt COLLATE NOCASE")]
+# Průvodce: všechny objekty oblasti bez filtrů, jen poloha a zařazení (bez cest a bodů)
+pruvodce = [dict(r) for r in db.execute(
+    "SELECT id, objekt, sektor, podsektor, druh, lat, lon FROM prehled ORDER BY sektor, podsektor IS NULL, podsektor, objekt COLLATE NOCASE")]
 for r in rows + clovek:
     if r['zapis']: r['zapis'] = zapis(r['zapis'])
 akt = db.execute("SELECT hodnota FROM meta WHERE klic = 'aktualizace'").fetchone()
-json.dump({"aktualizace": akt and akt[0], "objekty": rows, "clovek": clovek}, open("data.json", "w"), ensure_ascii=False)
-print(len(rows), "objektů,", len(clovek), "pro Člověka -> data.json")
+json.dump({"aktualizace": akt and akt[0], "objekty": rows, "clovek": clovek, "pruvodce": pruvodce}, open("data.json", "w"), ensure_ascii=False)
+print(len(rows), "objektů,", len(clovek), "pro Člověka,", len(pruvodce), "v Průvodci -> data.json")
