@@ -69,6 +69,18 @@ CREATE TABLE IF NOT EXISTS cesta_autor (      -- cesta může mít více autorů
   PRIMARY KEY (cesta_id, autor_id)
 );
 
+CREATE TABLE IF NOT EXISTS obrazek (          -- fotky a nákresy ke skalám, plní obrazky.py (ČHS), ručně (skalnioblasti, průvodce)
+  id        INTEGER PRIMARY KEY,
+  url       TEXT UNIQUE,                      -- původní adresa (NULL u skenu z průvodce)
+  objekt_id INTEGER NOT NULL REFERENCES objekt(id),
+  cesta_id  INTEGER REFERENCES cesta(id),     -- obrázek z galerie cesty
+  zdroj     TEXT NOT NULL CHECK (zdroj IN ('čhs','skalnioblasti','průvodce')),
+  popis     TEXT,                             -- popisek z galerie ('topo', 'protokol' …)
+  soubor    TEXT,                             -- data/obrazky/<objekt>/<soubor> (necommitovat)
+  odhad     TEXT CHECK (odhad IN ('foto','nakres','protokol','mapa')),  -- automaticky (popisek, barevnost)
+  druh      TEXT CHECK (druh IN ('foto','nakres','protokol','mapa','jine'))  -- ručně, má přednost před odhadem
+);
+
 CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktualizace = den stažení z ČHS
 
 -- nejlehčí cesta a body se počítají, neukládají
