@@ -35,6 +35,18 @@ def preskok(cn, z):
         if m: return 'Přeskok %d' % (int(m.group(1)) if m.group(1) else len(m.group(2)))
     return z
 
+PRVO = re.compile(r',\s*((?:\d{1,2}\.\s*)*\d{4}|\?)\s*$')  # prvovýstup končí datem/rokem: 'A, B,15.6.1991'
+
+def prvovystup(pv):
+    """'Bruno Ullrich, E. Hütter,1922' -> (['Bruno Ullrich', 'E. Hütter'], '1922', 1922)."""
+    m = PRVO.search(pv) or re.search(r',\s*([^,]*\d{4}[^,]*)$', pv)  # i 'červenec 1966'
+    kdo = pv[:m.start()] if m else pv
+    if 'neznám' in kdo: kdo = ''  # Autoři neznámí
+    kdo = re.sub(r'\(.*?\)|^První známý výstup:?', '', kdo)  # bez poznámek (samojištění)
+    jm = [a.strip() for a in re.split(r',|;|\s+a\s+', kdo) if a.strip() and not re.search(r'\d', a)]  # bez překlepnutých dat
+    rok = m and re.search(r'\d{4}', m.group(1))
+    return jm, m and m.group(1), rok and int(rok.group())
+
 def typ(n):
     n = n.lower()
     return 'lom' if re.search(r'\blom\b|lom ', n) else 'boulder' if 'boulder' in n else 'skála'
@@ -42,13 +54,22 @@ def typ(n):
 def objekt(oid):
     s = get(f"/skaly-skala-{oid}/")
     m = re.search(r'mapy\.cz/turisticka\?y=([\d.]+)&x=([\d.]+)', s)
-    cesty = re.findall(r'href="/skaly-cesta-(\d+)/" title="([^"]*)">[^<]*</a>'
-                       r'<span class="info-roads">,\s*([^<]*)</span>', s)
+    cesty = []
+    for k in s.split('<a href="/skaly-cesta-')[1:]:  # blok jedné cesty: název, klasifikace, ikony, popis, prvovýstup
+        c = re.match(r'(\d+)/" title="([^"]*)">[^<]*</a><span class="info-roads">,\s*([^<]*)</span>', k)
+        if not c: continue
+        k = k.split('</ul>')[0]
+        li = [re.sub(r'<[^>]+>', '', x).replace(' ', ' ').strip() for x in re.findall(r'<li>(.*?)</li>', k, re.S)]
+        pv = li.pop() if len(li) > 1 or li and (PRVO.search(li[0]) or 'neznám' in li[0]) else None  # poslední = prvovýstup
+        cesty.append((*c.groups(), ' '.join(li) or None, pv, int('zajis_nyty_ano' in k)))
     return oid, (float(m[1]), float(m[2])) if m else (None, None), cesty
 
 db = sqlite3.connect("data/jizerky.db")
 for c in ('masiv', 'zakaz'):
     try: db.execute(f'ALTER TABLE objekt ADD COLUMN {c} INTEGER NOT NULL DEFAULT 0')
+    except sqlite3.OperationalError: pass  # sloupec už existuje
+for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER'):
+    try: db.execute(f'ALTER TABLE cesta ADD COLUMN {col}')
     except sqlite3.OperationalError: pass  # sloupec už existuje
 db.executescript(open("data/schema.sql", encoding="utf-8").read())
 # klasifikace: I–VI = 1–6, od VI každé písmeno +1 bod
@@ -87,9 +108,16 @@ for oid, sid, on in objekty:
                "ON CONFLICT(id) DO UPDATE SET sektor_id=excluded.sektor_id, nazev=excluded.nazev, "
                "lat=excluded.lat, lon=excluded.lon",  # typ se po ruční opravě nepřepisuje
                (oid, sid, on, typ(on), lat, lon))
-    for cid, cn, z in cesty:
+    for cid, cn, z, popis, pv, kruhy in cesty:
         z = preskok(cn, z.replace('\xa0', ' ').strip())
-        db.execute("INSERT OR REPLACE INTO cesta VALUES (?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z)))
+        jm, datum, rok = prvovystup(pv) if pv else ([], None, None)
+        db.execute("INSERT OR REPLACE INTO cesta(id,objekt_id,nazev,zapis,stupen,popis,prvovystup,datum,rok,kruhy) "
+                   "VALUES (?,?,?,?,?,?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z), popis, pv, datum, rok, kruhy))
+        db.execute("DELETE FROM cesta_autor WHERE cesta_id=?", (int(cid),))
+        for i, a in enumerate(jm):
+            db.execute("INSERT OR IGNORE INTO autor(jmeno) VALUES (?)", (a,))
+            db.execute("INSERT OR IGNORE INTO cesta_autor VALUES (?, (SELECT id FROM autor WHERE jmeno=?), ?)", (int(cid), a, i))
+db.execute("DELETE FROM autor WHERE id NOT IN (SELECT autor_id FROM cesta_autor)")
 db.execute("UPDATE objekt SET masiv = (id IN (%s))" % ",".join(map(str, masivy or [0])))
 db.execute("UPDATE objekt SET zakaz = (id IN (%s))" % ",".join(map(str, zakazy or [0])))
 db.execute("INSERT OR REPLACE INTO meta VALUES ('aktualizace', ?)", (datetime.date.today().isoformat(),))

@@ -35,11 +35,12 @@ CREATE TABLE IF NOT EXISTS objekt (
   podsektor_id INTEGER REFERENCES podsektor(id),
   masiv     INTEGER NOT NULL DEFAULT 0,       -- 1 = v ČHS označen „- M“
   zakaz     INTEGER NOT NULL DEFAULT 0,       -- 1 = v ČHS ikona „Zákaz lezení“
-  druh      TEXT CHECK (druh IN ('věž','kámen','masiv','lom')), -- skalnioblasti.cz (bez značky / - K, - B / - M), lom dle typu
+  druh      TEXT CHECK (druh IN ('věž','kámen','masiv','stěna','led')), -- druhy.py: skalnioblasti.cz + pravidla pořadatele
   so_id     INTEGER,                          -- ID skály na skalnioblasti.cz
   kniha     INTEGER,                          -- vrcholová kniha: 1 ano, 0 ne, NULL nevíme
   slanak    INTEGER,                          -- slaňovací kruh: 1 ano, 0 ne, NULL nevíme
   pesky_km  REAL,                             -- z Hausmanky k objektu, jen Odlehlé skály (trasy.py)
+  nakres    TEXT,                             -- vlastní nákres (SVG překreslené ze schématu), např. obrazky/nakresy/8335.svg
   CHECK ((lat IS NULL) = (lon IS NULL))
 );
 
@@ -48,7 +49,24 @@ CREATE TABLE IF NOT EXISTS cesta (
   objekt_id INTEGER NOT NULL REFERENCES objekt(id),
   nazev     TEXT NOT NULL,
   zapis     TEXT NOT NULL,                    -- klasifikace jak je v ČHS
-  stupen    TEXT REFERENCES klasifikace(stupen) -- NULL = nejde převést (led, AF…)
+  stupen    TEXT REFERENCES klasifikace(stupen), -- NULL = nejde převést (led, AF…)
+  popis     TEXT,                             -- popis cesty z ČHS
+  prvovystup TEXT,                            -- jak je v ČHS: 'Bruno Ullrich, E. Hütter,1922'
+  datum     TEXT,                             -- datum prvovýstupu jak je v ČHS (15.6.1991, 1922)
+  rok       INTEGER,                          -- rok prvovýstupu (pro řazení)
+  kruhy     INTEGER                           -- fixní jištění (kruhy, skoby, nýty) dle ikony ČHS: 1 ano, 0 ne
+);
+
+CREATE TABLE IF NOT EXISTS autor (            -- autoři prvovýstupů, plní nacti.py
+  id    INTEGER PRIMARY KEY,
+  jmeno TEXT NOT NULL UNIQUE                  -- jak je v ČHS ('Rudolf Kauschka', 'E. Hütter')
+);
+
+CREATE TABLE IF NOT EXISTS cesta_autor (      -- cesta může mít více autorů
+  cesta_id INTEGER NOT NULL REFERENCES cesta(id) ON DELETE CASCADE,
+  autor_id INTEGER NOT NULL REFERENCES autor(id),
+  poradi   INTEGER NOT NULL,                  -- pořadí v zápisu prvovýstupu
+  PRIMARY KEY (cesta_id, autor_id)
 );
 
 CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktualizace = den stažení z ČHS

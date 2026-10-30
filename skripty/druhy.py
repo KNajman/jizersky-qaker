@@ -1,4 +1,4 @@
-"""Druh objektu (věž / kámen / masiv / lom) ze seznamu skal na skalnioblasti.cz uloženého v data/zdroje/
+"""Druh objektu (věž / kámen / masiv / stěna / led) ze seznamu skal na skalnioblasti.cz uloženého v data/zdroje/
 (bez značky = věž, „- K“ a „- B“ = kámen, „- M“ = masiv). Páruje se podle názvu v rámci oblasti;
 nespárované vypíše. Stránka má ochranu proti robotům, seznam se proto ukládá ručně z prohlížeče."""
 import html, re, sqlite3, unicodedata
@@ -24,11 +24,14 @@ for oid, n in db.execute('SELECT id, nazev FROM objekt').fetchall():
 db.execute("UPDATE objekt SET druh='kámen' WHERE typ='boulder'")  # boulder = kámen (dle pořadatele)
 for vzor, d in (('%věž%', 'věž'), ('%kámen%', 'kámen')):  # bez shody podle názvu
     db.execute("UPDATE objekt SET druh=? WHERE druh IS NULL AND nazev LIKE ?", (d, vzor))
-# pravidla pořadatele: „- M“ v ČHS (kromě věží) a stěny, plotny, předskalí, masivy = masiv; lomy = lom
+# pravidla pořadatele: „- M“ v ČHS (kromě věží) a plotny, předskalí, masivy = masiv; stěny a lomy = stěna;
+# led = objekt jen s ledovými/drytoolovými cestami (WI, M)
 db.execute("UPDATE objekt SET druh='masiv' WHERE masiv=1 AND nazev NOT LIKE '%věž%'")
 for vzor in ('%masiv%', '%masív%', '%stěn%', '%plotn%', '%předskal%'):
     db.execute("UPDATE objekt SET druh='masiv' WHERE nazev LIKE ?", (vzor,))
-db.execute("UPDATE objekt SET druh='lom' WHERE typ='lom' OR nazev LIKE 'Lom %'")
+db.execute("UPDATE objekt SET druh='stěna' WHERE nazev LIKE '%stěn%' OR typ='lom' OR nazev LIKE 'Lom %'")
+db.execute("""UPDATE objekt SET druh='led' WHERE EXISTS (SELECT 1 FROM cesta WHERE objekt_id=objekt.id)
+              AND NOT EXISTS (SELECT 1 FROM cesta WHERE objekt_id=objekt.id AND zapis NOT LIKE 'WI%' AND zapis NOT LIKE 'M%')""")
 RUCNE = {16979: 'kámen', 8345: 'masiv', 17722: 'kámen', 17718: 'kámen'}  # Tank B, Vodopádový solitér, Tlustoprd, Skalní hřib
 db.executemany('UPDATE objekt SET druh=? WHERE id=?', [(d, i) for i, d in RUCNE.items()])
 db.commit()

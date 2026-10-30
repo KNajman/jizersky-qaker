@@ -8,10 +8,11 @@ Web slouží jen jako podklad, žádné odškrtávání ani přihlašování. Pr
 Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, skripty v `skripty/` (spouštět z kořene).
 - `schema.sql` – SQLite schéma (česky): sektor, podsektor, klasifikace, objekt, cesta, pohled prehled
 - `jizerky.db` – databáze, zdroj pravdy (commitovat)
-- `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS)
+- `nacti.py` – stáhne/aktualizuje data z horosvaz.cz (upsert podle ID z ČHS); u cest i popis, prvovýstup (datum, rok),
+  kruhy (ikona fixního jištění) a autory do tabulek `autor` + `cesta_autor` (cesta může mít více autorů, filtr podle jména)
 - `trasy.py` – pěší vzdálenost + převýšení z Hausmanky k sektorům (OSRM foot + opentopodata EU-DEM)
 - `doplnky.py` – věže přidané pořadatelem mimo ČHS (záporná ID) + chybějící cesty/GPS
-- `druhy.py` – druh objektu (věž/kámen/masiv) ze seznamu skalnioblasti.cz v `data/zdroje/` (uložen ručně z prohlížeče,
+- `druhy.py` – druh objektu (věž/kámen/masiv/stěna/led) ze seznamu skalnioblasti.cz v `data/zdroje/` (uložen ručně z prohlížeče,
   web má ochranu proti robotům); boulder = kámen. Sloupce `kniha`, `slanak` (1/0/NULL); slaňáky ručně v `doplnky.py` (SLANAK), na webu sloupec s kolečkem (druh se zatím neukazuje).
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
   tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
@@ -36,8 +37,9 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
 - Nejlehčí cesta = cesta s nejnižšími body.
-- Druh objektu (`objekt.druh`: věž/kámen/masiv/lom) určuje `druhy.py`: skalnioblasti.cz (bez značky věž, - K/- B kámen, - M masiv),
-  boulder = kámen; pak pravidla pořadatele: „- M“ v ČHS (kromě věží) a stěna/plotna/předskalí/masiv v názvu = masiv, lom = lom; RUCNE.
+- Druh objektu (`objekt.druh`: věž/kámen/masiv/stěna/led) určuje `druhy.py`: skalnioblasti.cz (bez značky věž, - K/- B kámen, - M masiv),
+  boulder = kámen; pak pravidla pořadatele: „- M“ v ČHS (kromě věží) a plotna/předskalí/masiv v názvu = masiv, stěna v názvu a lomy = stěna,
+  jen ledové/drytoolové cesty (WI, M) = led; RUCNE.
 - Web (dotaz v `export.py`) ukazuje jen druh věž a kámen s GPS a cestami, bez zákazu lezení v ČHS (`objekt.zakaz`).
   Výjimky: ZOBRAZIT (masivy, které pořadatel chce: Koráb, Nos…) a VYRADIT (jen to, co pravidla nezachytí: ruční skrytí, dál než 22 km pěšky).
   Ze zápisu klasifikace export vynechává metry a RP. Typ (skála/boulder/lom) z názvu, ruční oprava se nepřepisuje.
@@ -59,6 +61,9 @@ Tisk (tlačítko / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první
 - Sektor = konvexní obal jeho objektů se zaoblenými rohy (+~180 m, podsektory +~145 m) s vlastní barvou, objekty mají barvu sektoru.
   Objekty dál než 3 km od mediánu sektoru se do obalu nepočítají; Odlehlé skály polygon nemají, body jsou černé.
 - Přesuny objektů mezi sektory (dle pořadatele) jsou v `doplnky.py` (SEKTOR).
+
+## Nákresy
+`objekt.nakres` = cesta k vlastnímu SVG (`obrazky/nakresy/<id>.svg`), překreslenému napůl ručně ze staženého schématu.
 
 ## Známé mezery
 - Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).

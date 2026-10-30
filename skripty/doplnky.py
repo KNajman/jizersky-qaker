@@ -65,6 +65,20 @@ try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0'
 except sqlite3.OperationalError: pass  # sloupec už existuje
 try: db.execute('ALTER TABLE objekt ADD COLUMN pesky_km REAL')
 except sqlite3.OperationalError: pass  # sloupec už existuje
+for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER'):
+    try: db.execute(f'ALTER TABLE cesta ADD COLUMN {col}')
+    except sqlite3.OperationalError: pass  # sloupec už existuje
+try: db.execute('ALTER TABLE objekt ADD COLUMN nakres TEXT')
+except sqlite3.OperationalError: pass  # sloupec už existuje
+# druh: lom zrušen, přibyla stěna a led (změna CHECK přímo ve schématu tabulky)
+sql = db.execute("SELECT sql FROM sqlite_master WHERE name='objekt'").fetchone()[0]
+if "'masiv','lom'" in sql:
+    db.execute("UPDATE objekt SET druh=NULL WHERE druh='lom'")  # druhy.py doplní znovu
+    db.commit()
+    db.execute('PRAGMA writable_schema=ON')
+    db.execute("UPDATE sqlite_master SET sql=? WHERE name='objekt'", (sql.replace("'masiv','lom'", "'masiv','stěna','led'"),))
+    db.execute('PRAGMA writable_schema=OFF')
+    db.commit(); db.close(); db = sqlite3.connect('data/jizerky.db')
 db.executescript(open('data/schema.sql', encoding='utf-8').read())
 db.execute('PRAGMA foreign_keys = ON')
 for oid, sid, n, lat, lon in OBJEKTY:
@@ -80,7 +94,7 @@ cid = 0
 for oid, cesty in CESTY.items():
     for n, z in cesty:
         cid -= 1
-        db.execute('INSERT INTO cesta VALUES (?,?,?,?,?)', (cid, oid, n, z, z.split('-')[0]))
+        db.execute('INSERT INTO cesta(id,objekt_id,nazev,zapis,stupen) VALUES (?,?,?,?,?)', (cid, oid, n, z, z.split('-')[0]))
 # celý sektor ČHS jako podsektor jiného sektoru (dle pořadatele): sektor ČHS -> (sektor, podsektor)
 for z, (sid, n) in {SVA: (STO, 'Svah pod Aplitovými skalami')}.items():
     db.execute('INSERT OR IGNORE INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n))
