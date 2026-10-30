@@ -28,6 +28,13 @@ def stupen(z):
         return RIM[int(m.group(1)) - 1]
     return None
 
+def preskok(cn, z):
+    """Přeskok jen v názvu cesty ('Přeskok', 'Zadní přeskok' se zápisem 1, 1-2, III) -> 'Přeskok N'."""
+    if re.search(r'p[řr]eskok(?!ov)', cn, re.I) and not re.match(r'P[řr]eskok', z):
+        m = re.match(r'(\d)|(III|II|I)(?![IVX])', z)
+        if m: return 'Přeskok %d' % (int(m.group(1)) if m.group(1) else len(m.group(2)))
+    return z
+
 def typ(n):
     n = n.lower()
     return 'lom' if re.search(r'\blom\b|lom ', n) else 'boulder' if 'boulder' in n else 'skála'
@@ -81,7 +88,7 @@ for oid, sid, on in objekty:
                "lat=excluded.lat, lon=excluded.lon",  # typ se po ruční opravě nepřepisuje
                (oid, sid, on, typ(on), lat, lon))
     for cid, cn, z in cesty:
-        z = z.replace('\xa0', ' ').strip()
+        z = preskok(cn, z.replace('\xa0', ' ').strip())
         db.execute("INSERT OR REPLACE INTO cesta VALUES (?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z)))
 db.execute("UPDATE objekt SET masiv = (id IN (%s))" % ",".join(map(str, masivy or [0])))
 db.execute("UPDATE objekt SET zakaz = (id IN (%s))" % ",".join(map(str, zakazy or [0])))
