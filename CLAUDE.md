@@ -16,6 +16,7 @@ Web v kořeni (`index.html`, `data.json`, `obrazky/`), DB a schéma v `data/`, s
 - `podsektory.py` – podsektory podle terénu: objekty do 300 m bez údolí hlubšího než 6 m mezi sebou (EU-DEM)
   tvoří skupinu, názvy z nejbližších vrcholů OSM; cache výšek `data/dem_cache.json` (necommitovat)
 - `export.py` – DB -> `data.json` (bez lomů)
+- `cesty.py` – zvýrazněné pěší cesty z OSM (Viničná, Čínská; seznam CESTY) -> `cesty.json`, spouštět jednorázově
 - `sw.js` – offline režim (stránka a data ze sítě, při výpadku z cache; mapové dlaždice se neukládají)
 - `index.html` – web, Bootstrap + Leaflet z cdnjs, OSM dlaždice, načítá data.json
 - `vrstevnice.py` – jednorázově vygeneruje pozadí `vrstevnice.svg` (EU-DEM + vrcholy z OSM; numpy, matplotlib)

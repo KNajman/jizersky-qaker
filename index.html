@@ -165,8 +165,13 @@ const poloha=m=>{const C=L.Control.extend({options:{position:'topleft'},onAdd(){
  m.on('locationfound',e=>{ja&&ja.remove();ja=L.layerGroup([L.circle(e.latlng,{radius:e.accuracy,weight:1,fillOpacity:.1}),L.circleMarker(e.latlng,{radius:7,color:'#fff',weight:2,fillColor:'#1a73e8',fillOpacity:1})]).addTo(m);});
  m.on('locationerror',e=>alert('Polohu se nepodařilo zjistit: '+e.message));};
 poloha(map);
+// zvýrazněné pěší cesty z OSM (skripty/cesty.py)
+const CESTY=fetch('cesty.json').then(r=>r.json()).catch(()=>({}));
+const cesty=m=>CESTY.then(c=>Object.entries(c).forEach(([n,ws])=>{
+ L.polyline(ws,{color:'#fff',weight:8,opacity:.9,interactive:false}).addTo(m);
+ L.polyline(ws,{color:'#4d3d6e',weight:4}).bindTooltip(n,{sticky:true}).addTo(m);}));
 const koza=m=>L.marker(HAUSMANKA,{icon:L.divIcon({className:'start',html:'<svg viewBox="0 0 32 32" width="26" height="26" fill="#fff" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M6 14h15l3-6h3l2 3-2 2h-3l-2 5v3H6z"/><path fill="none" stroke-width="2" d="M8 21v6M11 21v6M18 21v6M21 21v6"/><path fill="none" stroke-width="1.6" d="M24 8q-1-5-5-5"/><path d="M27 13l-1 4-1-4z"/><path fill="none" stroke-width="1.5" d="M6 15l-2-3"/></svg>',iconSize:[38,38]}),zIndexOffset:1000}).addTo(m).bindPopup('<b>Start a cíl</b><br><a href="https://mapy.com/s/nasololutu" target="_blank">Hausmanka u Kozy</a>');
-koza(map);
+koza(map);cesty(map);
 L.marker([50.8696473,15.1748055],{icon:L.divIcon({className:'start hospoda',html:'<svg viewBox="0 0 32 32" width="26" height="26" fill="#fff" stroke="#fff" stroke-linejoin="round" stroke-linecap="round"><path d="M12 18 3 8q-2 7 1 14z"/><ellipse cx="16.5" cy="18" rx="7.5" ry="5.5"/><path d="M20 15q1-7 5-9 3 0 3 3l2 1-2 1q-2 1-3 5z"/><path fill="none" stroke-width="1.8" d="M15 23l-1 5M19 23l1 5"/><circle cx="25.5" cy="8.5" r=".9" fill="var(--boruvka)" stroke="none"/></svg>',iconSize:[36,36]}),zIndexOffset:900}).addTo(map).bindPopup('<b>Hospoda U Tetřeva</b><br><a href="https://mapy.com/fnc/v1/showmap?mapset=outdoor&center=15.1748055,50.8696473&zoom=17&marker=true" target="_blank">Ferdinandov</a>');
 L.marker([50.8394525,15.1609314],{icon:L.divIcon({className:'start hospoda',html:'<svg viewBox="0 0 32 32" width="26" height="26" fill="none" stroke="#fff" stroke-linecap="round"><g transform="translate(16 16) scale(-1 1) rotate(-45) translate(-16 -13)"><rect x="0" y="9" width="32" height="5" rx="2.5" fill="#fff"/><circle cx="3.2" cy="11.5" r="1.2" fill="#4d3d6e" stroke="none"/><path stroke-width="1.5" d="M16 13v7M18 13v7M20 13v7M22 13v7M24 13v7M26 13v7M28 13v7M30 13v7"/></g></svg>',iconSize:[36,36]}),zIndexOffset:900}).addTo(map).bindPopup('<b>Občerstvení na Hřebínku</b><br><a href="https://mapy.com/s/jujunahaje" target="_blank">Mapy.cz</a>');
 L.marker([50.7913642,15.1304522],{icon:L.divIcon({className:'start hospoda',html:'<svg viewBox="0 0 32 32" width="28" height="28"><path fill="#fff" d="M15.3 11C10 11 5.5 8 5 3.5 10 3 14.5 6 15.3 11zM16.7 11C22 11 26.5 8 27 3.5 22 3 17.5 6 16.7 11z"/><path fill="#fff" d="M9 13q7-4.5 14 0 4.5 4 2 9.5Q22 28 16 30 10 28 7 22.5 4.5 17 9 13z"/><g fill="none" stroke="var(--boruvka)" stroke-width="1.1"><circle cx="12.5" cy="14.5" r="2.1"/><circle cx="16" cy="13.5" r="2.1"/><circle cx="19.5" cy="14.5" r="2.1"/><circle cx="10.5" cy="19" r="2.1"/><circle cx="14.2" cy="18.6" r="2.1"/><circle cx="17.8" cy="18.6" r="2.1"/><circle cx="21.5" cy="19" r="2.1"/><circle cx="12.5" cy="23.2" r="2.1"/><circle cx="16" cy="23.2" r="2.1"/><circle cx="19.5" cy="23.2" r="2.1"/><circle cx="16" cy="27" r="2.1"/></g></svg>',iconSize:[36,36]}),zIndexOffset:900}).addTo(map).bindPopup('<b>Stánek Maliník</b><br><a href="https://mapy.com/s/cogenecutu" target="_blank">Mapy.cz</a>');
@@ -244,7 +249,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
  qc.oninput=drawC;
  seznamClovek.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkc[z]){e.preventDefault();mc.setView(mkc[z].getLatLng(),17);mkc[z].openPopup();mc.getContainer().scrollIntoView({behavior:'smooth'});}};
  window.ukazMapuC=()=>{if(mc)return mc.invalidateSize();const g=C.filter(r=>r.lat!=null);
-  mc=L.map('mapaClovek',{zoomSnap:.25});vrstva().addTo(mc);koza(mc);poloha(mc);
+  mc=L.map('mapaClovek',{zoomSnap:.25});vrstva().addTo(mc);koza(mc);cesty(mc);poloha(mc);
   g.forEach(r=>mkc[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(SC),fillOpacity:.8}).addTo(mc)
    .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
   mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])),{padding:[10,10]});drawC();};
@@ -268,7 +273,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
  [qp,secp].forEach(el=>el.oninput=drawP);
  listp.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkp[z]){e.preventDefault();mp.setView(mkp[z].getLatLng(),16);mkp[z].openPopup();mp.getContainer().scrollIntoView({behavior:'smooth'});}};
  window.ukazMapuP=()=>{if(mp)return mp.invalidateSize();
-  mp=L.map('mapaPruvodce',{zoomSnap:.25}).fitBounds(L.latLngBounds(P.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});vrstva().addTo(mp);koza(mp);poloha(mp);
+  mp=L.map('mapaPruvodce',{zoomSnap:.25}).fitBounds(L.latLngBounds(P.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});vrstva().addTo(mp);koza(mp);cesty(mp);poloha(mp);
   hranice(mp,P,S=>`<b>${S}</b>`);
   P.forEach(r=>{if(r.lat!=null)mkp[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(mp)
    .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});

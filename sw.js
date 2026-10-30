@@ -1,6 +1,6 @@
 // Offline: stránka a data ze sítě (při výpadku z cache), knihovny a obrázky z cache. Mapové dlaždice se neukládají.
 const CACHE = 'qaker-v1';
-const VZDY = ['./', 'index.html', 'data.json', 'obrazky/vrstevnice.svg', 'obrazky/mapy.png'];
+const VZDY = ['./', 'index.html', 'data.json', 'cesty.json', 'obrazky/vrstevnice.svg', 'obrazky/mapy.png'];
 self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(VZDY)).then(() => self.skipWaiting())));
 self.addEventListener('activate', e => e.waitUntil(caches.keys()
   .then(k => Promise.all(k.filter(x => x !== CACHE).map(x => caches.delete(x)))).then(() => self.clients.claim())));
