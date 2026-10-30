@@ -23,6 +23,7 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 .pod td{background:rgba(111,138,74,.12);font-weight:600;font-size:.9rem}
 .view{display:none}.view.on{display:block}
 #map,#mapaClovek,#mapaPruvodce{height:62vh;border-radius:.375rem}
+@media (min-width:768px){#map,#mapaClovek,#mapaPruvodce{width:min(100%,calc(80vh*4/3));height:auto;aspect-ratio:4/3;margin:auto}}
 .navbar-brand,h1,h2,h3,h4,h5,.card-header{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em}
 .card{background:rgba(255,255,255,.88);backdrop-filter:blur(2px);border-color:rgba(35,57,44,.15)}
 .sektor .card-header{background:rgba(111,138,74,.12);border-left:6px solid var(--b)}
@@ -192,6 +193,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
   rows=rows.filter(r=>Math.hypot((r.lat-c[0])*111,(r.lon-c[1])*70)<1.5);  // odlehlé objekty (>1,5 km) do obalu nepočítat
   L.polygon(obal(rows.flatMap(r=>kruh(r,.0013,.0021))),  // ~145 m
    {color:barva(S),weight:1,dashArray:'4 4',fillOpacity:.1}).addTo(m).bindPopup(`<b>${N}</b><br>${S}`);}}
+ map.fitBounds(L.latLngBounds(D.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});
  hranice(map,D,(S,f)=>`<b>${S}</b><br>sektor ${f.body_sektor??'?'} b${f.pesky_km!=null?`<br>${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''}`);
  D.forEach(r=>{if(r.lat==null)return;
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
@@ -239,7 +241,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
   mc=L.map('mapaClovek');vrstva().addTo(mc);koza(mc);poloha(mc);
   g.forEach(r=>mkc[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(SC),fillOpacity:.8}).addTo(mc)
    .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
-  mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])).pad(.1));drawC();};
+  mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])),{padding:[10,10]});drawC();};
  drawC();
  // Průvodce: všechny objekty bez filtrů, po sektorech a podsektorech, bez cest a bodů
  const secsP=[...new Set(P.map(r=>r.sektor))].sort((a,b)=>a.localeCompare(b,'cs')),mkp={};let mp;
@@ -260,7 +262,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
  [qp,secp].forEach(el=>el.oninput=drawP);
  listp.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkp[z]){e.preventDefault();mp.setView(mkp[z].getLatLng(),16);mkp[z].openPopup();mp.getContainer().scrollIntoView({behavior:'smooth'});}};
  window.ukazMapuP=()=>{if(mp)return mp.invalidateSize();
-  mp=L.map('mapaPruvodce').setView([50.86,15.2],11);vrstva().addTo(mp);koza(mp);poloha(mp);
+  mp=L.map('mapaPruvodce').fitBounds(L.latLngBounds(P.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});vrstva().addTo(mp);koza(mp);poloha(mp);
   hranice(mp,P,S=>`<b>${S}</b>`);
   P.forEach(r=>{if(r.lat!=null)mkp[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(mp)
    .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
