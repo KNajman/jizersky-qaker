@@ -27,8 +27,8 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Body objektu = body sektoru + body nejlehčí cesty.
 - Body sektoru jsou FIXNÍ, zadávají se ručně (`UPDATE sektor SET body = …`). Žádný skript je nepřepisuje.
   Aktuálně: 1 Oldřichovské sedlo, Srázy a Poledník, Stržový vrch a Kopřivník;
-  2 Vřesoviště; 3 Štolpich (vč. podsektoru Svah pod Aplitovými skalami, v ČHS samostatný sektor); 4 Rudolfov, Polední kameny a Hlídači;
-  5 Odlehlé skály, Tišina a Smrk, Paličník. (Odlehlé skály bonifikované kvůli dostupnosti.)
+  2 Vřesoviště, Štolpich (vč. podsektoru Svah pod Aplitovými skalami, v ČHS samostatný sektor); 3 Polední kameny a Hlídači;
+  5 Rudolfov, Odlehlé skály, Tišina a Smrk, Paličník. (Odlehlé skály bonifikované kvůli dostupnosti.)
 - Klasifikace: I–VI = 1–6, dál každý stupeň +1: VIb 7, VIc 8, VII(=VIIa) 9, VIIb 10, VIIc 11, VIII 12 …
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).
