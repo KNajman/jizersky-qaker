@@ -171,14 +171,14 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
   let rows=D.filter(r=>r.sektor===S&&r.lat!=null),f=rows[0];if(!f)continue;
   const m=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
   rows=rows.filter(r=>Math.hypot((r.lat-m[0])*111,(r.lon-m[1])*70)<3);  // odlehlé objekty (>3 km) do obalu nepočítat
-  const P=rows.flatMap(r=>kruh(r,.0007,.0011)); // ~80 m kolem objektů
+  const P=rows.flatMap(r=>kruh(r,.0016,.0026)); // ~180 m kolem objektů
   L.polygon(obal(P),{color:barva(S),weight:2,fillOpacity:.15}).addTo(map)
   .bindPopup(`<b>${S}</b><br>sektor ${f.body_sektor??'?'} b${f.pesky_km!=null?`<br>${f.pesky_km} km, +${f.stoupani_m} / −${f.klesani_m} m`:''}`);}
  for(const P of new Set(D.filter(r=>r.podsektor).map(r=>r.sektor+'|'+r.podsektor))){const [S,N]=P.split('|');
   let rows=D.filter(r=>r.sektor===S&&r.podsektor===N&&r.lat!=null);
   const m=[med(rows.map(r=>r.lat)),med(rows.map(r=>r.lon))];
   rows=rows.filter(r=>Math.hypot((r.lat-m[0])*111,(r.lon-m[1])*70)<1.5);  // odlehlé objekty (>1,5 km) do obalu nepočítat
-  L.polygon(obal(rows.flatMap(r=>kruh(r,.0004,.0006))),
+  L.polygon(obal(rows.flatMap(r=>kruh(r,.0013,.0021))),  // ~145 m
    {color:barva(S),weight:1,dashArray:'4 4',fillOpacity:.1}).addTo(map).bindPopup(`<b>${N}</b><br>${S}`);}
  D.forEach(r=>{if(r.lat==null)return;
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
