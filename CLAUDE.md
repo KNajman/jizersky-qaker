@@ -28,7 +28,9 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 - Body sektoru jsou FIXNÍ, zadávají se ručně (`UPDATE sektor SET body = …`). Žádný skript je nepřepisuje.
   Aktuálně: 1 Oldřichovské sedlo, Srázy a Poledník, Stržový vrch a Kopřivník;
   2 Vřesoviště, Štolpich (vč. podsektoru Svah pod Aplitovými skalami, v ČHS samostatný sektor); 3 Polední kameny a Hlídači;
-  5 Rudolfov, Odlehlé skály, Tišina a Smrk, Paličník. (Odlehlé skály bonifikované kvůli dostupnosti.)
+  5 Rudolfov, Tišina a Smrk, Paličník.
+- Odlehlé skály: body za umístění podle pěší vzdálenosti objektu z Hausmanky (`objekt.pesky_km`, plní `trasy.py`):
+  do 10 km 2, do 18 km 5, dál 6 (pohled `prehled`). Na webu km u objektu a rozpětí 2–6 b.
 - Klasifikace: I–VI = 1–6, dál každý stupeň +1: VIb 7, VIc 8, VII(=VIIa) 9, VIIb 10, VIIc 11, VIII 12 …
 - Přeskok N = 2N bodů („Přeskok 1+“ = P1).
 - Ledy, drytool, „?“ se nehodnotí (stupen NULL).

@@ -63,6 +63,8 @@ try: db.execute('ALTER TABLE objekt ADD COLUMN podsektor_id INTEGER REFERENCES p
 except sqlite3.OperationalError: pass  # sloupec už existuje
 try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0')
 except sqlite3.OperationalError: pass  # sloupec už existuje
+try: db.execute('ALTER TABLE objekt ADD COLUMN pesky_km REAL')
+except sqlite3.OperationalError: pass  # sloupec už existuje
 db.executescript(open('data/schema.sql', encoding='utf-8').read())
 db.execute('PRAGMA foreign_keys = ON')
 for oid, sid, n, lat, lon in OBJEKTY:

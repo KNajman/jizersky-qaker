@@ -178,7 +178,10 @@ function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal 
  return h(P).concat(h(P.reverse()));}
 fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,objekty:D,clovek:C,pruvodce:P})=>{
  const datum=A?new Date(A).toLocaleDateString('cs'):'?';akt.textContent=datum;
- const bs=S=>D.find(r=>r.sektor===S).body_sektor??99;  // seřazeno podle bodů za sektor, pak abecedně
+ // body za sektor; Odlehlé skály mají body podle vzdálenosti objektu, proto rozpětí (např. 2–6)
+ const bv=S=>[...new Set(D.filter(r=>r.sektor===S).map(r=>r.body_sektor))].sort((a,b)=>a-b);
+ const bt=S=>{const v=bv(S);return v.length>1?v[0]+'–'+v.at(-1):v[0]??'?';};
+ const bs=S=>Math.max(...bv(S).map(b=>b??99));  // seřazeno podle bodů za sektor, pak abecedně
  const secs=[...new Set(D.map(r=>r.sektor))].sort((a,b)=>bs(a)-bs(b)||a.localeCompare(b,'cs'));
  const vse=[...secs,...new Set(P.map(r=>r.sektor).filter(S=>!secs.includes(S)))];
  const barva=S=>S==='Odlehlé skály'?'#000':`hsl(${vse.indexOf(S)*137.5%360},70%,40%)`;  // zlatý úhel = sousední barvy daleko od sebe
@@ -202,15 +205,15 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
   mk[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(map)
   .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br>body: ${pts(r)}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
  secs.forEach(s=>sec.add(new Option(s,s)));
- bodySektoru.innerHTML=secs.map(S=>[S,D.find(r=>r.sektor===S).body_sektor]).sort((a,b)=>(a[1]??9)-(b[1]??9))
+ bodySektoru.innerHTML=secs.map(S=>[S,bt(S)]).sort((a,b)=>bs(a[0])-bs(b[0]))
   .reduce((h,[S,b],i,a)=>h+(i&&a[i-1][1]===b?'':(i?'</div>':'')+`<div class="bs-radek"><b>${b??'?'} b</b>`)
    +`<a href="#${kotva(S)}" class="btn rounded-pill bs-btn" style="--b:${barva(S)}" data-s="${S}">${S}</a>`+(i===a.length-1?'</div>':''),'');
  bodySektoru.onclick=e=>{const a=e.target.closest('[data-s]');if(!a)return;e.preventDefault();
   if(sec.value&&sec.value!==a.dataset.s||q.value){sec.value='';q.value='';draw();}
   document.getElementById(kotva(a.dataset.s)).scrollIntoView({behavior:'smooth'});};
  tisk.innerHTML=`<h1>Jizerský Qaker – objekty a body (body objektu = sektor + nejlehčí cesta) · data ČHS k ${datum}</h1>`+secs.map(S=>{const rows=D.filter(r=>r.sektor===S);
-  return `<section style="--b:${barva(S)}"><h3>${S} – sektor ${rows[0].body_sektor??'?'} b, ${rows.length} obj.</h3><table>`+
-   rows.map(r=>`<tr><td>${r.slanak?'○':''}</td><td>${r.objekt}</td><td>${r.cesta||'–'}</td><td>${r.zapis||''}</td><td>${pts(r)}</td></tr>`).join('')+'</table></section>';}).join('');
+  return `<section style="--b:${barva(S)}"><h3>${S} – sektor ${bt(S)} b, ${rows.length} obj.</h3><table>`+
+   rows.map(r=>`<tr><td>${r.slanak?'○':''}</td><td>${r.objekt}${r.km_objekt?` (${r.km_objekt} km)`:''}</td><td>${r.cesta||'–'}</td><td>${r.zapis||''}</td><td>${pts(r)}</td></tr>`).join('')+'</table></section>';}).join('');
  addEventListener('beforeprint',()=>document.body.classList.add('tisk'));addEventListener('afterprint',()=>document.body.classList.remove('tisk'));
  tiskni.onclick=()=>print();
  function draw(){
@@ -218,14 +221,14 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
   for(const S of secs){if(s&&S!==s)continue;
    const rows=D.filter(r=>r.sektor===S&&r.objekt.toLowerCase().includes(t));
    if(!rows.length)continue;n+=rows.length;
-   const b=rows[0].body_sektor,f=rows[0];
+   const b=bt(S),f=rows[0];
    h+=`<div class="dlazdice"><div class="card sektor" id="${kotva(S)}" style="--b:${barva(S)}"><div class="card-header d-flex flex-wrap gap-2 align-items-baseline">
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
-   <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
+   <span class="small text-body-secondary">${rows.length} obj.${f.km_objekt?' · body podle vzdálenosti: do 10 km 2, do 18 km 5, dál 6':f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-center" title="slaňovací kruh">Slaň.</th><th class="text-center">Body</th><th class="text-center">Mapy</th></tr></thead><tbody>`+
    rows.map(r=>radek(r,pts(r))).join('')+'</tbody></table></div></div></div>';}
   list.innerHTML=h;cnt.textContent=n;}
- function radek(r,b){return `<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
+ function radek(r,b){return `<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.podsektor||r.km_objekt?'<div class="small text-body-secondary">'+[r.podsektor,r.km_objekt&&r.km_objekt+' km · '+r.body_sektor+' b'].filter(Boolean).join(' · ')+'</div>':''}</td>
    <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-center">${r.slanak?'<span class="slanak" title="slaňovací kruh"></span>':''}</td>${b!==undefined?`<td class="text-center fw-semibold">${b}</td>`:''}
    <td class="text-nowrap text-center">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`;}
  list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};

@@ -39,6 +39,7 @@ CREATE TABLE IF NOT EXISTS objekt (
   so_id     INTEGER,                          -- ID skály na skalnioblasti.cz
   kniha     INTEGER,                          -- vrcholová kniha: 1 ano, 0 ne, NULL nevíme
   slanak    INTEGER,                          -- slaňovací kruh: 1 ano, 0 ne, NULL nevíme
+  pesky_km  REAL,                             -- z Hausmanky k objektu, jen Odlehlé skály (trasy.py)
   CHECK ((lat IS NULL) = (lon IS NULL))
 );
 
@@ -53,12 +54,14 @@ CREATE TABLE IF NOT EXISTS cesta (
 CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktualizace = den stažení z ČHS
 
 -- nejlehčí cesta a body se počítají, neukládají
+-- Odlehlé skály: body za umístění podle pěší vzdálenosti objektu (do 10 km 2, do 18 km 5, dál 6)
 DROP VIEW IF EXISTS prehled;
 CREATE VIEW prehled AS
-SELECT o.id, o.nazev AS objekt, o.typ, o.masiv, o.zakaz, o.druh, o.kniha, o.slanak, s.nazev AS sektor, p.nazev AS podsektor, s.body AS body_sektor,
-       s.pesky_km, s.stoupani_m, s.klesani_m, s.cil_lat, s.cil_lon,
+SELECT o.id, o.nazev AS objekt, o.typ, o.masiv, o.zakaz, o.druh, o.kniha, o.slanak, s.nazev AS sektor, p.nazev AS podsektor, 
+       CASE WHEN o.pesky_km IS NULL THEN s.body WHEN o.pesky_km <= 10 THEN 2 WHEN o.pesky_km <= 18 THEN 5 ELSE 6 END AS body_sektor,
+       o.pesky_km AS km_objekt, s.pesky_km, s.stoupani_m, s.klesani_m, s.cil_lat, s.cil_lon,
        o.lat, o.lon, c.nazev AS cesta, c.zapis, k.body AS body_cesta,
-       s.body + k.body AS body,
+       CASE WHEN o.pesky_km IS NULL THEN s.body WHEN o.pesky_km <= 10 THEN 2 WHEN o.pesky_km <= 18 THEN 5 ELSE 6 END + k.body AS body,
        (SELECT count(*) FROM cesta WHERE objekt_id = o.id) AS pocet_cest
 FROM objekt o
 JOIN sektor s ON s.id = o.sektor_id

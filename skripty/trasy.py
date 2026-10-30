@@ -49,4 +49,10 @@ for sid, nazev in db.execute('SELECT id, nazev FROM sektor').fetchall():
     db.execute('UPDATE sektor SET pesky_km=?, stoupani_m=?, klesani_m=?, cil_lat=?, cil_lon=? WHERE id=?',
                (d, up, down, cil[0], cil[1], sid))
     print(f"{d:5.1f} km  +{up:4d} / -{down:4d} m  {nazev}")
+# Odlehlé skály: vzdálenost ke každému objektu zvlášť, podle ní body za umístění (pohled prehled)
+for oid, nazev, lat, lon in db.execute("SELECT o.id, o.nazev, o.lat, o.lon FROM objekt o JOIN sektor s ON s.id = o.sektor_id "
+                                       "WHERE s.nazev = 'Odlehlé skály' AND o.lat IS NOT NULL").fetchall():
+    r = get(f'https://routing.openstreetmap.de/routed-foot/route/v1/foot/{START[1]},{START[0]};{lon},{lat}?overview=false')
+    db.execute('UPDATE objekt SET pesky_km=? WHERE id=?', (round(r['routes'][0]['distance']/1000, 1), oid))
+    time.sleep(.5)
 db.commit()
