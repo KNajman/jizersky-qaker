@@ -21,8 +21,11 @@ rows = [dict(r) for r in db.execute(
 def zapis(z):  # „VIc, RP VII, 8m“ -> „VIc“, samotné „RP IV-V“ -> „IV-V“
     c = [x for x in z.split(', ') if not re.fullmatch(r'\d+\s*m', x)]
     return ', '.join(x for x in c if not x.startswith('RP ')) or ', '.join(x[3:] for x in c)
-for r in rows:
+# Jizerský Člověk: celý sektor Stržový vrch a Kopřivník bez filtrů (pravidla Qakeru neplatí)
+clovek = [dict(r) for r in db.execute(
+    "SELECT * FROM prehled WHERE sektor = 'Stržový vrch a Kopřivník' ORDER BY objekt COLLATE NOCASE")]
+for r in rows + clovek:
     if r['zapis']: r['zapis'] = zapis(r['zapis'])
 akt = db.execute("SELECT hodnota FROM meta WHERE klic = 'aktualizace'").fetchone()
-json.dump({"aktualizace": akt and akt[0], "objekty": rows}, open("data.json", "w"), ensure_ascii=False)
-print(len(rows), "objektů -> data.json")
+json.dump({"aktualizace": akt and akt[0], "objekty": rows, "clovek": clovek}, open("data.json", "w"), ensure_ascii=False)
+print(len(rows), "objektů,", len(clovek), "pro Člověka -> data.json")

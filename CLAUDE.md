@@ -45,7 +45,7 @@ Aktualizace jen ručně: GitHub Actions → „Aktualizace dat“ → Run workfl
 
 ## Záložky (index.html)
 Lepivé menu: Průvodce (neaktivní, připravujeme), Qaker (výchozí; podmenu Propozice / Mapa / Objekty), Cracker (jaro 2027),
-Člověk (propozice + mapa jen sektoru Stržový vrch a Kopřivník). Přepínání přes #hash, jeden soubor.
+Člověk (propozice, hledání, mapa a seznam celého sektoru Stržový vrch a Kopřivník bez filtrů Qakeru – `data.json` clovek). Přepínání přes #hash, jeden soubor.
 Mapy mají tlačítko „kde jsem“ (GPS telefonu). `data.json` = {aktualizace (den stažení z ČHS, tabulka meta), objekty}, datum v zápatí a v tisku.
 Tisk (tlačítko / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první sloupec slaňák.
 

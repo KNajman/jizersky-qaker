@@ -17,6 +17,9 @@ body{font-family:'Barlow Semi Condensed',system-ui,sans-serif;font-size:1.05rem;
 [id]{scroll-margin-top:6.5rem}
 .kdejsem{display:flex!important;align-items:center;justify-content:center;width:34px;height:34px;background:#fff;color:var(--les)}
 @media (max-width:575px){.navbar-brand{font-size:1rem;margin-right:.5rem}.navbar .nav-link{padding:.4rem .45rem!important;font-size:.95rem}}
+.hledani{border:2px solid var(--les)}.hledani .input-group-text{background:#fff;color:var(--les)}
+.pocet{display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--les);color:#fff;border-radius:.5rem;padding:.3rem .5rem;line-height:1.1}
+.pocet b{font-family:'Chakra Petch',sans-serif;font-size:1.8rem}.pocet span{font-size:.85rem;opacity:.8}
 .view{display:none}.view.on{display:block}
 #map,#mapaClovek{height:62vh;border-radius:.375rem}
 .navbar-brand,h1,h2,h3,h4,h5,.card-header{font-family:'Chakra Petch',sans-serif;font-weight:700;letter-spacing:.02em}
@@ -83,10 +86,10 @@ Kilometry a převýšení u sektorů jsou orientační pěší trasa z Hausmanky
 </div></div></div></div>
 <button id="tiskni" class="btn btn-lg w-100 mb-3 text-white" style="background:var(--les)">Vytisknout seznam objektů (A4)</button>
 <div class="card mb-3 p-1" id="mapa"><div id="map"></div></div>
-<div class="card mb-3" id="objekty"><div class="card-body row g-2 align-items-center">
-<div class="col-sm-5"><input id="q" class="form-control" placeholder="hledat objekt"></div>
-<div class="col-sm-5"><select id="sec" class="form-select"><option value="">všechny sektory</option></select></div>
-<div class="col-sm-2 text-sm-end"><span id="cnt" class="badge text-bg-secondary"></span></div></div></div>
+<div class="card mb-3 hledani" id="objekty"><div class="card-body row g-2 g-md-3 align-items-center">
+<div class="col-md-6"><div class="input-group input-group-lg"><span class="input-group-text"><svg viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M11.7 10.3a6.5 6.5 0 1 0-1.4 1.4l3.9 3.9 1.4-1.4zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9"/></svg></span><input id="q" type="search" class="form-control" placeholder="hledat objekt…"></div></div>
+<div class="col-md-4"><select id="sec" class="form-select form-select-lg"><option value="">všechny sektory</option></select></div>
+<div class="col-md-2"><div class="pocet"><b id="cnt"></b><span>objektů</span></div></div></div></div>
 <div id="list" class="row g-3 g-xl-4"></div>
 </section>
 <section id="v-cracker" class="view"><div class="card"><div class="card-header"><h2 class="h5 mb-0">Jizerský Cracker</h2></div>
@@ -120,7 +123,11 @@ Kilometry a převýšení u sektorů jsou orientační pěší trasa z Hausmanky
 <tr><td>šavle</td><td class="text-end fw-semibold">−5 b (mínus!!!!!!)</td></tr>
 <tr><td>po sobě, neb po partnerovi zkonzumovaná<div class="small text-body-secondary">po bodu 3 lze skončit s bilancí +15 b, jedna šavle může obíhat max. 3×</div></td><td class="text-end fw-semibold">20 b</td></tr>
 </tbody></table></div></div></div></div>
+<div class="card mb-3 hledani"><div class="card-body row g-2 g-md-3 align-items-center">
+<div class="col-md-10"><div class="input-group input-group-lg"><span class="input-group-text"><svg viewBox="0 0 16 16" width="20" height="20"><path fill="currentColor" d="M11.7 10.3a6.5 6.5 0 1 0-1.4 1.4l3.9 3.9 1.4-1.4zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9"/></svg></span><input id="qc" type="search" class="form-control" placeholder="hledat věž na Stržovém vrchu…"></div></div>
+<div class="col-md-2"><div class="pocet"><b id="cntc"></b><span>objektů</span></div></div></div></div>
 <div class="card mb-3 p-1"><div id="mapaClovek"></div></div>
+<div class="card sektor mb-3" id="seznamClovek"></div>
 </section>
 <div id="tisk"></div>
 </main>
@@ -153,7 +160,7 @@ const kotva=S=>'s-'+S.normalize('NFD').replace(/[^\w]+/g,'-').toLowerCase();
 function obal(P){P=[...P].sort((a,b)=>a[1]-b[1]||a[0]-b[0]);  // konvexní obal (monotone chain)
  const x=(o,a,b)=>(a[1]-o[1])*(b[0]-o[0])-(a[0]-o[0])*(b[1]-o[1]),h=(Q)=>{const H=[];for(const p of Q){while(H.length>1&&x(H[H.length-2],H[H.length-1],p)<=0)H.pop();H.push(p);}H.pop();return H;};
  return h(P).concat(h(P.reverse()));}
-fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,objekty:D})=>{
+fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,objekty:D,clovek:C})=>{
  const datum=A?new Date(A).toLocaleDateString('cs'):'?';akt.textContent=datum;
  const bs=S=>D.find(r=>r.sektor===S).body_sektor??99;  // seřazeno podle bodů za sektor, pak abecedně
  const secs=[...new Set(D.map(r=>r.sektor))].sort((a,b)=>bs(a)-bs(b)||a.localeCompare(b,'cs'));
@@ -197,18 +204,30 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
    <h2 class="h5 mb-0">${S}</h2><span class="badge badge-body">sektor ${b??'?'} b</span>
    <span class="small text-body-secondary">${rows.length} obj.${f.pesky_km!=null?` · ${f.pesky_km} km · +${f.stoupani_m} / −${f.klesani_m} m`:''}</span></div>
    <div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle"><thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-center" title="slaňovací kruh">Slaň.</th><th class="text-center">Body</th><th class="text-center">Mapy</th></tr></thead><tbody>`+
-   rows.map(r=>`<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
-   <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-center">${r.slanak?'<span class="slanak" title="slaňovací kruh"></span>':''}</td><td class="text-center fw-semibold">${pts(r)}</td>
-   <td class="text-nowrap text-center">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`).join('')+'</tbody></table></div></div></div>';}
-  list.innerHTML=h;cnt.textContent=n+' objektů';}
+   rows.map(r=>radek(r,pts(r))).join('')+'</tbody></table></div></div></div>';}
+  list.innerHTML=h;cnt.textContent=n;}
+ function radek(r,b){return `<tr><td><a href="${chs(r)}" target="_blank" class="objekt">${r.objekt}</a>${r.podsektor?'<div class="small text-body-secondary">'+r.podsektor+'</div>':''}</td>
+   <td>${r.cesta||'<span class="text-body-secondary">–</span>'}</td><td>${r.zapis||''}</td><td class="text-center">${r.slanak?'<span class="slanak" title="slaňovací kruh"></span>':''}</td>${b!==undefined?`<td class="text-center fw-semibold">${b}</td>`:''}
+   <td class="text-nowrap text-center">${r.lat!=null?`<a href="#" data-z="${r.id}" title="ukázat na mapě" class="ico"><svg viewBox="0 0 16 16" width="24" height="24"><path fill="currentColor" d="M8 16s6-5.69 6-10A6 6 0 0 0 2 6c0 4.31 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6"/></svg></a><a href="${mapy(r)}" target="_blank" title="otevřít na Mapy.cz" class="ico"><img src="obrazky/mapy.png" width="24" height="24" alt="Mapy.cz"></a>`:'<span class="text-body-secondary">bez GPS</span>'}</td></tr>`;}
  list.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z){e.preventDefault();map.setView(mk[z].getLatLng(),16);mk[z].openPopup();map.getContainer().scrollIntoView({behavior:'smooth'});}};
  [q,sec].forEach(el=>el.oninput=draw);draw();
  // Člověk: mapa jen Stržový vrch a Kopřivník, vytvoří se při prvním zobrazení
- let mc;window.mapaClovek=()=>{if(mc)return mc.invalidateSize();const S='Stržový vrch a Kopřivník',rows=D.filter(r=>r.sektor===S);
+ // Člověk: celý sektor Stržový vrch a Kopřivník bez filtrů Qakeru; mapa se vytvoří při prvním zobrazení
+ const SC='Stržový vrch a Kopřivník',mkc={};let mc;
+ function drawC(){const t=qc.value.toLowerCase(),rows=C.filter(r=>r.objekt.toLowerCase().includes(t));cntc.textContent=rows.length;
+  seznamClovek.style.setProperty('--b',barva(SC));
+  seznamClovek.innerHTML=`<div class="card-header"><h2 class="h5 mb-0">${SC}</h2></div><div class="table-responsive"><table class="table table-sm table-hover mb-0 align-middle">
+   <thead><tr><th>Objekt</th><th>Nejlehčí cesta</th><th>Kl.</th><th class="text-center" title="slaňovací kruh">Slaň.</th><th class="text-center">Mapy</th></tr></thead><tbody>`+
+   rows.map(r=>radek(r)).join('')+'</tbody></table></div>';
+  for(const id in mkc)mkc[id].setStyle({opacity:rows.some(r=>r.id==id)?1:.15,fillOpacity:rows.some(r=>r.id==id)?.8:.1});}
+ qc.oninput=drawC;
+ seznamClovek.onclick=e=>{const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkc[z]){e.preventDefault();mc.setView(mkc[z].getLatLng(),17);mkc[z].openPopup();mc.getContainer().scrollIntoView({behavior:'smooth'});}};
+ window.ukazMapuC=()=>{if(mc)return mc.invalidateSize();const g=C.filter(r=>r.lat!=null);
   mc=L.map('mapaClovek');vrstva().addTo(mc);koza(mc);poloha(mc);
-  rows.forEach(r=>L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(S),fillOpacity:.8}).addTo(mc)
-   .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:''}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
-  mc.fitBounds(L.latLngBounds(rows.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])).pad(.1));};
+  g.forEach(r=>mkc[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(SC),fillOpacity:.8}).addTo(mc)
+   .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
+  mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])).pad(.1));drawC();};
+ drawC();
  ukaz();
 });
 // záložky: #cracker, #clovek; cokoli jiného (#propozice, #mapa, sektory…) patří ke Qakeru
@@ -217,7 +236,7 @@ function ukaz(){const h=location.hash.slice(1),v=['cracker','clovek'].includes(h
  document.querySelectorAll('#menu [data-v]').forEach(a=>a.classList.toggle('active',a.dataset.v===v));
  podmenu.style.display=v==='qaker'?'':'none';
  if(v==='qaker'){map.invalidateSize();const e=h&&h!=='qaker'&&document.getElementById(h);if(e)e.scrollIntoView();}else scrollTo(0,0);
- if(v==='clovek'&&window.mapaClovek)mapaClovek();}
+ if(v==='clovek'&&window.ukazMapuC)ukazMapuC();}
 addEventListener('hashchange',ukaz);ukaz();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js');
 </script></body></html>
