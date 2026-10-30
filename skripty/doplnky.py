@@ -84,5 +84,7 @@ for z, (sid, n) in {SVA: (STO, 'Svah pod Aplitovými skalami')}.items():
     db.execute('INSERT OR IGNORE INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n))
     pid = db.execute('SELECT id FROM podsektor WHERE sektor_id=? AND nazev=?', (sid, n)).fetchone()[0]
     db.execute('UPDATE objekt SET sektor_id=?, podsektor_id=? WHERE sektor_id=?', (sid, pid, z))
+# ruční oprava klasifikace podle pořadatele: Kozlí jehla, Přeskok (ČHS má Přeskok 1)
+db.execute("UPDATE cesta SET zapis='Přeskok 2', stupen='P2' WHERE id=57335")
 db.commit()
 print(len(OBJEKTY), 'objektů,', -cid, 'cest doplněno')
