@@ -31,7 +31,7 @@ def stupen(z):
 def preskok(cn, z):
     """Přeskok jen v názvu cesty ('Přeskok', 'Zadní přeskok' se zápisem 1, 1-2, III) -> 'Přeskok N'."""
     if re.search(r'p[řr]eskok(?!ov)', cn, re.I) and not re.match(r'P[řr]eskok', z):
-        m = re.match(r'(\d)|(III|II|I)(?![IVX])', z)
+        m = re.match(r'(?:\d-)?(\d)|(III|II|I)(?![IVX])', z)  # rozsah 1-2 -> vyšší
         if m: return 'Přeskok %d' % (int(m.group(1)) if m.group(1) else len(m.group(2)))
     return z
 
