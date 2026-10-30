@@ -17,7 +17,9 @@ JMENA = {(39, 'Stojka'): 'Zahradní stěna', (39, 'u Rakev'): 'Svinské čelo',
          (621, 'Brdo'): 'Milíř', (43, 'Kopřivník'): 'Koňská hlava'}
 ROZDEL = {(44, 'Dolní Lysá skála'): ['Stržový vrch', 'Kopřivník'],  # automatický název závisí na objektech
           (44, 'Stržový vrch'): ['Stržový vrch', 'Kopřivník']}  # skupina -> objekty k nejbližšímu z vrcholů OSM
-PRESUN = {17959: 'Dračí vrch'}  # Atlas draků; objekt -> podsektor téhož sektoru
+PRESUN = {17959: 'Dračí vrch', -4: 'Kopřivník', -3: 'Kopřivník',  # Atlas draků, Kuláč, Hranáč
+          273: 'Liberecká výšina', 281: 'Jezdec', 8408: 'Pod Přehradou'}  # Slůně, Zub, Borůvka
+# objekt -> podsektor téhož sektoru; neexistující se založí u stejnojmenného vrcholu OSM (jinak u objektu)
 
 def get(url, data=None, pokus=8):
     for i in range(pokus):
@@ -111,6 +113,10 @@ for sid, sn in db.execute('SELECT id, nazev FROM sektor').fetchall():
             db.executemany('UPDATE objekt SET podsektor_id=? WHERE id=?', [(pid, obj[i][0]) for i in y])
             print(f'{sn:28} {n:30} {len(y):3} obj.')
 for oid, n in PRESUN.items():
+    sid, la, lo = db.execute('SELECT sektor_id, lat, lon FROM objekt WHERE id = ?', (oid,)).fetchone()
+    if not db.execute('SELECT 1 FROM podsektor WHERE sektor_id = ? AND nazev = ?', (sid, n)).fetchone():
+        v = next(((e['lat'], e['lon']) for e in osm if e['tags']['name'] == n), (la, lo))
+        db.execute('INSERT INTO podsektor(sektor_id,nazev,vrchol_lat,vrchol_lon) VALUES (?,?,?,?)', (sid, n, *v))
     db.execute('UPDATE objekt SET podsektor_id = (SELECT p.id FROM podsektor p JOIN objekt o ON o.sektor_id = p.sektor_id '
                'WHERE o.id = ? AND p.nazev = ?) WHERE id = ?', (oid, n, oid))
 db.commit()
