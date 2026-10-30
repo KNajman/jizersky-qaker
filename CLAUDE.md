@@ -65,7 +65,9 @@ Tisk (tlačítko / Ctrl+P): všechny objekty na jednu A4 ve 3 sloupcích, první
 ## Nákresy
 `obrazky.py` stáhne obrázky z galerií ČHS (skála + cesty s ikonou Fotky) do `data/obrazky/<objekt>/` (necommitovat)
 a zapíše je do tabulky `obrazek`. ČHS neříká, co je na obrázku: `odhad` (foto/nakres/protokol/mapa) podle popisku
-a barevnosti, ruční oprava do `druh` (má přednost). Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
+a barevnosti, ruční oprava do `druh` (má přednost).
+Třídění: `python3 skripty/tridic.py` -> http://localhost:8766 (náhledy po objektech, tlačítka nákres/foto/protokol/mapa/jiné,
+ukládá rovnou do `obrazek.druh`; DB pak commitnout). Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
 Z nákresů se napůl ručně kreslí vlastní SVG, `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`).
 
 ## Známé mezery
