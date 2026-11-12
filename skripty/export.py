@@ -26,7 +26,7 @@ clovek = [dict(r) for r in db.execute(
     "SELECT * FROM prehled WHERE sektor = 'Stržový vrch a Kopřivník' ORDER BY objekt COLLATE NOCASE")]
 # Průvodce: všechny objekty oblasti bez filtrů, jen poloha a zařazení (bez cest a bodů)
 pruvodce = [dict(r) for r in db.execute(
-    "SELECT id, objekt, sektor, podsektor, druh, lat, lon FROM prehled ORDER BY sektor, podsektor IS NULL, podsektor, objekt COLLATE NOCASE")]
+    "SELECT id, objekt, sektor, podsektor, druh, nakres, lat, lon FROM prehled ORDER BY sektor, podsektor IS NULL, podsektor, objekt COLLATE NOCASE")]
 for r in rows + clovek:
     if r['zapis']: r['zapis'] = zapis(r['zapis'])
 akt = db.execute("SELECT hodnota FROM meta WHERE klic = 'aktualizace'").fetchone()
