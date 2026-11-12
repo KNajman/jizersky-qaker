@@ -252,7 +252,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
  qc.oninput=drawC;
  seznamClovek.onclick=e=>{const n=e.target.closest('[data-n]')?.dataset.n;if(n){e.preventDefault();nakres(n);return;}const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkc[z]){e.preventDefault();mc.setView(mkc[z].getLatLng(),17);mkc[z].openPopup();mc.getContainer().scrollIntoView({behavior:'smooth'});}};
  window.ukazMapuC=()=>{if(mc)return mc.invalidateSize();const g=C.filter(r=>r.lat!=null);
-  mc=L.map('mapaClovek',{zoomSnap:.25});vrstva().addTo(mc);koza(mc);cesty(mc);poloha(mc);
+  mc=L.map('mapaClovek',{zoomSnap:.25});vrstva().addTo(mc);koza(mc);poloha(mc);
   g.forEach(r=>mkc[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(SC),fillOpacity:.8}).addTo(mc)
    .bindPopup(`<b>${r.objekt}</b>${r.podsektor?'<br>'+r.podsektor:''}<br>${r.cesta?r.cesta+', '+r.zapis:'bez cest v DB'}<br><a href="${mapy(r)}" target="_blank">Mapy.cz</a>`));
   mc.fitBounds(L.latLngBounds(g.map(r=>[r.lat,r.lon]).concat([HAUSMANKA])),{padding:[10,10]});drawC();};
@@ -276,7 +276,7 @@ fetch('data.json',{cache:'no-cache'}).then(r=>r.json()).then(({aktualizace:A,obj
  [qp,secp].forEach(el=>el.oninput=drawP);
  listp.onclick=e=>{const n=e.target.closest('[data-n]')?.dataset.n;if(n){e.preventDefault();nakres(n);return;}const z=e.target.closest('[data-z]')?.dataset.z;if(z&&mkp[z]){e.preventDefault();mp.setView(mkp[z].getLatLng(),16);mkp[z].openPopup();mp.getContainer().scrollIntoView({behavior:'smooth'});}};
  window.ukazMapuP=()=>{if(mp)return mp.invalidateSize();
-  mp=L.map('mapaPruvodce',{zoomSnap:.25}).fitBounds(L.latLngBounds(P.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});vrstva().addTo(mp);koza(mp);cesty(mp);poloha(mp);
+  mp=L.map('mapaPruvodce',{zoomSnap:.25}).fitBounds(L.latLngBounds(P.filter(r=>r.lat!=null).map(r=>[r.lat,r.lon])),{padding:[10,10]});vrstva().addTo(mp);koza(mp);poloha(mp);
   hranice(mp,P,S=>`<b>${S}</b>`);
   P.forEach(r=>{if(r.lat!=null)mkp[r.id]=L.circleMarker([r.lat,r.lon],{radius:5,weight:1,color:barva(r.sektor),fillOpacity:.8}).addTo(mp)
    .bindPopup(`<b>${r.objekt}</b><br>${r.sektor}${r.podsektor?' · '+r.podsektor:''}<br><a href="${chs(r)}" target="_blank">ČHS</a> · <a href="${mapy(r)}" target="_blank">Mapy.cz</a>`);});
