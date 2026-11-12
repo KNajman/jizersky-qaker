@@ -78,7 +78,8 @@ CREATE TABLE IF NOT EXISTS obrazek (          -- fotky a nákresy ke skalám, pl
   popis     TEXT,                             -- popisek z galerie ('topo', 'protokol' …)
   soubor    TEXT,                             -- data/obrazky/<objekt>/<soubor> (necommitovat)
   odhad     TEXT CHECK (odhad IN ('foto','nakres','protokol','mapa')),  -- automaticky (popisek, barevnost)
-  druh      TEXT CHECK (druh IN ('foto','nakres','protokol','mapa','jine'))  -- ručně, má přednost před odhadem
+  druh      TEXT CHECK (druh IN ('foto','nakres','protokol','mapa','jine')), -- ručně, má přednost před odhadem
+  pohled    TEXT CHECK (pohled IN ('pudorys','pohled'))  -- u nákresu: půdorys (shora, sever) / pohled (z boku, cesty jako linie)
 );
 
 CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktualizace = den stažení z ČHS
