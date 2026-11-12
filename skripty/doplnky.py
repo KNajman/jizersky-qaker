@@ -65,11 +65,12 @@ try: db.execute('ALTER TABLE objekt ADD COLUMN masiv INTEGER NOT NULL DEFAULT 0'
 except sqlite3.OperationalError: pass  # sloupec už existuje
 try: db.execute('ALTER TABLE objekt ADD COLUMN pesky_km REAL')
 except sqlite3.OperationalError: pass  # sloupec už existuje
-for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER'):
+for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER', 'nastup_x REAL', 'nastup_y REAL', 'strana TEXT'):
     try: db.execute(f'ALTER TABLE cesta ADD COLUMN {col}')
     except sqlite3.OperationalError: pass  # sloupec už existuje
-try: db.execute('ALTER TABLE objekt ADD COLUMN nakres TEXT')
-except sqlite3.OperationalError: pass  # sloupec už existuje
+for col in ('nakres TEXT', 'sever REAL', 'stred_x REAL', 'stred_y REAL'):
+    try: db.execute(f'ALTER TABLE objekt ADD COLUMN {col}')
+    except sqlite3.OperationalError: pass  # sloupec už existuje
 # druh: lom zrušen, přibyla stěna a led (změna CHECK přímo ve schématu tabulky)
 sql = db.execute("SELECT sql FROM sqlite_master WHERE name='objekt'").fetchone()[0]
 if "'masiv','lom'" in sql:
@@ -89,12 +90,15 @@ for oid, (lat, lon) in GPS.items():
 for oid, sid in SEKTOR.items():
     db.execute('UPDATE objekt SET sektor_id=? WHERE id=?', (sid, oid))
 db.executemany('UPDATE objekt SET slanak=1 WHERE id=?', [(i,) for i in SLANAK])
+nastupy = {(o, n): (x, y, s) for o, n, x, y, s in db.execute(  # nástupy z editoru přežijí nové vložení cest
+    'SELECT objekt_id, nazev, nastup_x, nastup_y, strana FROM cesta WHERE id < 0 AND nastup_x IS NOT NULL')}
 db.execute('DELETE FROM cesta WHERE id < 0')
 cid = 0
 for oid, cesty in CESTY.items():
     for n, z in cesty:
         cid -= 1
-        db.execute('INSERT INTO cesta(id,objekt_id,nazev,zapis,stupen) VALUES (?,?,?,?,?)', (cid, oid, n, z, z.split('-')[0]))
+        db.execute('INSERT INTO cesta(id,objekt_id,nazev,zapis,stupen,nastup_x,nastup_y,strana) VALUES (?,?,?,?,?,?,?,?)',
+                   (cid, oid, n, z, z.split('-')[0], *nastupy.get((oid, n), (None, None, None))))
 # celý sektor ČHS jako podsektor jiného sektoru (dle pořadatele): sektor ČHS -> (sektor, podsektor)
 for z, (sid, n) in {SVA: (STO, 'Svah pod Aplitovými skalami')}.items():
     db.execute('INSERT OR IGNORE INTO podsektor(sektor_id,nazev) VALUES (?,?)', (sid, n))

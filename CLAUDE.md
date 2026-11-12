@@ -68,7 +68,8 @@ a zapíše je do tabulky `obrazek`. ČHS neříká, co je na obrázku: `odhad` (
 a barevnosti, ruční oprava do `druh` (má přednost).
 Třídění: `python3 skripty/tridic.py` -> http://localhost:8766 (náhledy po objektech, tlačítka nákres/foto/protokol/mapa/jiné,
 ukládá rovnou do `obrazek.druh`; u nákresu ještě `obrazek.pohled` půdorys/pohled, filtr „nákres věže bez typu“; DB pak commitnout).
-Půdorys: cesty jako nástup na obrysu + sever -> světová strana. Pohled (z údolí, cesty jako linie): jak kreslit cesty, zatím otevřené. Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
+Půdorys: editor http://localhost:8766/editor (věže s půdorysem): sever (2 kliky), střed věže, nástupy cest ->
+`objekt.sever/stred_x/stred_y`, `cesta.nastup_x/nastup_y/strana` (S…SZ); nacti.py i doplnky.py nástupy zachovají. Na webu zatím ne. Pohled (z údolí, cesty jako linie): jak kreslit cesty, zatím otevřené. Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
 Z nákresů se napůl ručně kreslí vlastní SVG: `nakresy.py` udělá hrubé SVG jen pro věže, jen obrys skály bez cest a textu (originál skrytě) k dočištění v Inkscapu;
 originál zůstává jen lokálně, při commitu ho odstraní git filtr (`.gitattributes`, `skripty/bez_originalu.py`; v klonu jednou
 `git config filter.nakres.clean "python3 skripty/bez_originalu.py"`), `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`, plní `nakresy.py`); na webu ikona u nejlehčí cesty, klik = nákres přes celou obrazovku.

@@ -41,6 +41,8 @@ CREATE TABLE IF NOT EXISTS objekt (
   slanak    INTEGER,                          -- slaňovací kruh: 1 ano, 0 ne, NULL nevíme
   pesky_km  REAL,                             -- z Hausmanky k objektu, jen Odlehlé skály (trasy.py)
   nakres    TEXT,                             -- vlastní nákres (SVG překreslené ze schématu), např. obrazky/nakresy/8335.svg
+  sever     REAL,                             -- půdorys: směr severu v nákresu, stupně po směru hodin od svislice nahoru
+  stred_x   REAL, stred_y REAL,               -- půdorys: střed věže v souřadnicích nákresu (pro světovou stranu)
   CHECK ((lat IS NULL) = (lon IS NULL))
 );
 
@@ -54,7 +56,9 @@ CREATE TABLE IF NOT EXISTS cesta (
   prvovystup TEXT,                            -- jak je v ČHS: 'Bruno Ullrich, E. Hütter,1922'
   datum     TEXT,                             -- datum prvovýstupu jak je v ČHS (15.6.1991, 1922)
   rok       INTEGER,                          -- rok prvovýstupu (pro řazení)
-  kruhy     INTEGER                           -- fixní jištění (kruhy, skoby, nýty) dle ikony ČHS: 1 ano, 0 ne
+  kruhy     INTEGER,                          -- fixní jištění (kruhy, skoby, nýty) dle ikony ČHS: 1 ano, 0 ne
+  nastup_x  REAL, nastup_y REAL,              -- půdorys: nástup cesty v souřadnicích nákresu (editor v tridic.py)
+  strana    TEXT                              -- světová strana nástupu (S, SV, V, JV, J, JZ, Z, SZ) z nákresu
 );
 
 CREATE TABLE IF NOT EXISTS autor (            -- autoři prvovýstupů, plní nacti.py

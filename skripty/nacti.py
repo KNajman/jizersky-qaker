@@ -68,7 +68,7 @@ db = sqlite3.connect("data/jizerky.db")
 for c in ('masiv', 'zakaz'):
     try: db.execute(f'ALTER TABLE objekt ADD COLUMN {c} INTEGER NOT NULL DEFAULT 0')
     except sqlite3.OperationalError: pass  # sloupec už existuje
-for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER'):
+for col in ('popis TEXT', 'prvovystup TEXT', 'datum TEXT', 'rok INTEGER', 'kruhy INTEGER', 'nastup_x REAL', 'nastup_y REAL', 'strana TEXT'):
     try: db.execute(f'ALTER TABLE cesta ADD COLUMN {col}')
     except sqlite3.OperationalError: pass  # sloupec už existuje
 db.executescript(open("data/schema.sql", encoding="utf-8").read())
@@ -111,8 +111,11 @@ for oid, sid, on in objekty:
     for cid, cn, z, popis, pv, kruhy in cesty:
         z = preskok(cn, z.replace('\xa0', ' ').strip())
         jm, datum, rok = prvovystup(pv) if pv else ([], None, None)
-        db.execute("INSERT OR REPLACE INTO cesta(id,objekt_id,nazev,zapis,stupen,popis,prvovystup,datum,rok,kruhy) "
-                   "VALUES (?,?,?,?,?,?,?,?,?,?)", (int(cid), oid, cn, z, stupen(z), popis, pv, datum, rok, kruhy))
+        db.execute("INSERT INTO cesta(id,objekt_id,nazev,zapis,stupen,popis,prvovystup,datum,rok,kruhy) "
+                   "VALUES (?,?,?,?,?,?,?,?,?,?) ON CONFLICT(id) DO UPDATE SET objekt_id=excluded.objekt_id, "
+                   "nazev=excluded.nazev, zapis=excluded.zapis, stupen=excluded.stupen, popis=excluded.popis, "
+                   "prvovystup=excluded.prvovystup, datum=excluded.datum, rok=excluded.rok, kruhy=excluded.kruhy",
+                   (int(cid), oid, cn, z, stupen(z), popis, pv, datum, rok, kruhy))  # nástup z editoru zůstane
         db.execute("DELETE FROM cesta_autor WHERE cesta_id=?", (int(cid),))
         for i, a in enumerate(jm):
             db.execute("INSERT OR IGNORE INTO autor(jmeno) VALUES (?)", (a,))
