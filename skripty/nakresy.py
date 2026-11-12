@@ -45,10 +45,12 @@ os.makedirs('obrazky/nakresy', exist_ok=True)
 if len(sys.argv) > 1:  # jeden objekt (přepíše), případně konkrétní obrázek
     q = 'SELECT objekt_id, soubor FROM obrazek WHERE objekt_id=? AND druh=\'nakres\'' + (' AND id=?' if len(sys.argv) > 2 else '') + ' ORDER BY id'
     prace = [db.execute(q, tuple(map(int, sys.argv[1:3]))).fetchone()]
-else:  # všechny věže s nákresem, první nákres; existující SVG (ruční úpravy) se nepřepisují
-    prace = [r for r in db.execute("SELECT objekt_id, soubor FROM obrazek WHERE id IN (SELECT min(b.id) FROM obrazek b "
-                                   "JOIN objekt o ON o.id = b.objekt_id WHERE b.druh='nakres' AND o.druh='věž' GROUP BY b.objekt_id)")
-             if not os.path.exists(f'obrazky/nakresy/{r[0]}.svg')]
+else:  # všechny věže s nákresem, přednostně půdorys, jinak první; existující SVG (ruční úpravy) se nepřepisují
+    prace = {}
+    for oid, soubor in db.execute("SELECT b.objekt_id, b.soubor FROM obrazek b JOIN objekt o ON o.id = b.objekt_id "
+                                  "WHERE b.druh='nakres' AND o.druh='věž' ORDER BY b.pohled IS NOT 'pudorys', b.id"):
+        prace.setdefault(oid, soubor)
+    prace = [(o, s) for o, s in prace.items() if not os.path.exists(f'obrazky/nakresy/{o}.svg')]
 for oid, soubor in prace:
     cil = f'obrazky/nakresy/{oid}.svg'
     open(cil, 'w', encoding='utf-8').write(svg(soubor))
