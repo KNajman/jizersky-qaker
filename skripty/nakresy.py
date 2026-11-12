@@ -49,4 +49,9 @@ for oid, soubor in prace:
     cil = f'obrazky/nakresy/{oid}.svg'
     open(cil, 'w', encoding='utf-8').write(svg(soubor))
     print(soubor, '->', cil)
+# objekt.nakres = cesta k SVG pro web (u všech existujících souborů)
+db.execute('UPDATE objekt SET nakres=NULL')
+for f in os.listdir('obrazky/nakresy'):
+    db.execute('UPDATE objekt SET nakres=? WHERE id=?', ('obrazky/nakresy/' + f, int(f[:-4])))
+db.commit()
 print(len(prace), 'SVG')

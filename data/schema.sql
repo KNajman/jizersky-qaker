@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS meta (klic TEXT PRIMARY KEY, hodnota TEXT);  -- aktua
 -- Odlehlé skály: body za umístění podle pěší vzdálenosti objektu (do 10 km 2, do 18 km 5, dál 6)
 DROP VIEW IF EXISTS prehled;
 CREATE VIEW prehled AS
-SELECT o.id, o.nazev AS objekt, o.typ, o.masiv, o.zakaz, o.druh, o.kniha, o.slanak, s.nazev AS sektor, p.nazev AS podsektor, 
+SELECT o.id, o.nazev AS objekt, o.typ, o.masiv, o.zakaz, o.druh, o.kniha, o.slanak, o.nakres, s.nazev AS sektor, p.nazev AS podsektor, 
        CASE WHEN o.pesky_km IS NULL THEN s.body WHEN o.pesky_km <= 10 THEN 2 WHEN o.pesky_km <= 18 THEN 5 ELSE 6 END AS body_sektor,
        o.pesky_km AS km_objekt, s.pesky_km, s.stoupani_m, s.klesani_m, s.cil_lat, s.cil_lon,
        o.lat, o.lon, c.nazev AS cesta, c.zapis, k.body AS body_cesta,

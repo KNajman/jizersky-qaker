@@ -70,7 +70,7 @@ Třídění: `python3 skripty/tridic.py` -> http://localhost:8766 (náhledy po o
 ukládá rovnou do `obrazek.druh`; DB pak commitnout). Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
 Z nákresů se napůl ručně kreslí vlastní SVG: `nakresy.py` udělá hrubé SVG (vrstvy skála/cesty, originál skrytě) k dočištění v Inkscapu;
 originál zůstává jen lokálně, při commitu ho odstraní git filtr (`.gitattributes`, `skripty/bez_originalu.py`; v klonu jednou
-`git config filter.nakres.clean "python3 skripty/bez_originalu.py"`), `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`).
+`git config filter.nakres.clean "python3 skripty/bez_originalu.py"`), `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`, plní `nakresy.py`); na webu ikona u nejlehčí cesty, klik = nákres přes celou obrazovku.
 
 ## Známé mezery
 - Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).
