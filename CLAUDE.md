@@ -68,7 +68,7 @@ a zapíše je do tabulky `obrazek`. ČHS neříká, co je na obrázku: `odhad` (
 a barevnosti, ruční oprava do `druh` (má přednost).
 Třídění: `python3 skripty/tridic.py` -> http://localhost:8766 (náhledy po objektech, tlačítka nákres/foto/protokol/mapa/jiné,
 ukládá rovnou do `obrazek.druh`; DB pak commitnout). Skalnioblasti.cz a průvodce: soubory ručně, zdroj 'skalnioblasti'/'průvodce'.
-Z nákresů se napůl ručně kreslí vlastní SVG, `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`).
+Z nákresů se napůl ručně kreslí vlastní SVG: `nakresy.py` udělá hrubé SVG (vrstvy skála/cesty, originál skrytě) k dočištění v Inkscapu, `objekt.nakres` = cesta k němu (`obrazky/nakresy/<id>.svg`).
 
 ## Známé mezery
 - Objekty bez GPS se na webu nezobrazují (doplnit případně z lezec.cz / skalnioblasti.cz, pak se ukážou).
